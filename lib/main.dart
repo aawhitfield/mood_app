@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'mood.dart';
+import 'meals.dart';
+import 'meds.dart';
+import 'package:platform_aware/platform_aware.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 void main() => runApp(MyApp());
 
@@ -9,6 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Tracker App',
       theme: ThemeData(
+
         // This is the theme of your application.
         //
         // Try running your application with "flutter run". You'll see the
@@ -20,6 +28,10 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primaryColor: Colors.blue.shade700,
         accentColor: Colors.red.withAlpha(200),
+        fontFamily: Theme.of(context).platform == TargetPlatform.iOS
+            ? 'Pristina'
+            : 'Roboto',
+        toggleableActiveColor: Colors.red,
       ),
       home: MyHomePage(title: 'Tracker App'),
     );
@@ -40,51 +52,49 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
 
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
 
+    int _currentIndex = 0;
+    List<String> _emotions = <String>[];
+
+    final List<Widget> _children = [                                            // creates the 3 tabs source codes at the bottom of the screen
+      MoodWidget(),
+      MealsWidget(Colors.white),
+      MedsWidget(Colors.white),
+    ];
+  @override
+  void setState(fn) {
+    //
+    super.setState(fn);
+  }
 
   @override
   Widget build(BuildContext context) {
 
 
 
+    void _onButtonPressed() {                                                   // action that floating button takes
 
-   void _onButtonPressed()
-    {
-      print("Button pressed");
+      setState(() {
+      _getEmotionsPreferences().then(updateEmotions);
+      print(_emotions);
+    }
+      );
     }
 
-    Widget _newIconButton(BuildContext context, IconData icon, String text, bool isSelected)
-   {
-     return  Column(
-       mainAxisAlignment: MainAxisAlignment.start,
-       crossAxisAlignment: CrossAxisAlignment.center,
-       children: <Widget>[
-         IconButton(
-           icon: Icon(icon),
-           onPressed: _onButtonPressed,
-           iconSize: 32.0,
-           color: isSelected
-            ? Theme.of(context).primaryColor
-            : null,
 
-         ),
-         Text(
-           text,
-           style: TextStyle(
-             fontSize: 12.0,
-             color: isSelected
-                 ? Theme.of(context).primaryColor
-                 : null,
-           ),
-         ),
-       ],
-     );
+    void onTabTapped(int index)
+   {
+     setState(() {
+       _currentIndex = index;
+     });
    }
+
 
 
     // This method is rerun every time setState is called, for instance as done
@@ -97,71 +107,50 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
+        leading: Icon(Icons.menu),
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+      body: _children[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+          onTap: onTabTapped,
+          currentIndex: _currentIndex,
+          items: [
+            BottomNavigationBarItem(
+              icon: new Icon(Icons.mood),
+              title: new Text('Mood'),
             ),
-
+            BottomNavigationBarItem(
+              icon: new Icon(Icons.fastfood),
+              title: new Text('Meals'),
+            ),
+            BottomNavigationBarItem(
+              icon: new Icon(Icons.local_pharmacy),
+              title: new Text('Meds'),
+            ),
           ],
+
+
+
         ),
-      ),
-
-
-
-
-
-
-
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: null,
+      floatingActionButton:FloatingActionButton(
+        onPressed:_onButtonPressed,
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+      );
 
+  }
 
+  Future<List<String>> _getEmotionsPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> emotions = prefs.getStringList("emotions");
 
+    return emotions;
+  }
 
-
-
-
-
-      bottomNavigationBar: BottomAppBar(
-        child: Container(
-          height: 64.0,
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              _newIconButton(context, Icons.mood, "Mood", true),
-              _newIconButton(context, Icons.fastfood, "Meals", false),
-              _newIconButton(context, Icons.local_pharmacy, 'Meds', false),
-            ],
-          ),
-        ),
-        ),
-    );
+  void updateEmotions(List<String> emotions)
+  {
+    setState(() {
+      this._emotions = emotions;
+    });
   }
 }
