@@ -70,7 +70,7 @@ class MoodWidgetState extends State<MoodWidget>
       },
       trailing: new Checkbox(
         value: emotionSelected,
-        activeColor: Colors.red,
+        activeColor: Colors.red.withAlpha(200),
         onChanged: (bool newValue) {
           setState(() {
             newValue ? todaysEmotions.add(emotion) : todaysEmotions.remove(emotion);
