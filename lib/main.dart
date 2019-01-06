@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         //accentColor: Colors.red.withAlpha(200),
         accentColor: Colors.teal[500],
         fontFamily: Theme.of(context).platform == TargetPlatform.iOS
-            ? 'Pristina'
+            ? 'SF-Pro-Text'
             : 'Roboto',
         //toggleableActiveColor: Colors.red.withAlpha(200),
       ),
@@ -61,6 +61,8 @@ class MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   //List<String> _emotions = <String>[];
   List<Widget> tabs = <Widget>[];                                               // the navigation bar tabs at the bottom
+  String notesText = '';                                                        // value of the notes section
+  TextEditingController notesController = new TextEditingController();
 
 
 
@@ -234,12 +236,14 @@ class MyHomePageState extends State<MyHomePage> {
                   ),
                   child: TextField(
                     autofocus: true,
+                    controller: notesController,
                     textCapitalization: TextCapitalization.sentences,
                     maxLines: 3,
                     decoration: InputDecoration(
                         labelText: 'Notes',
                         labelStyle: TextStyle(color: Theme.of(context).hintColor)
                     ),
+                    onSubmitted: (String text) => onAddPressed,
                   ),
                 ),
               ],
@@ -270,7 +274,8 @@ class MyHomePageState extends State<MyHomePage> {
                 new FlatButton(
                   onPressed: (() {
                     Navigator.pop(context, Answer.ADD);
-                    onAddPressed();
+                    onAddPressed(notesController.text);
+                    notesController.clear();
                   }),
                   child: Text('ADD'),
                   textColor: Theme.of(context).accentColor,
@@ -456,12 +461,15 @@ class MyHomePageState extends State<MyHomePage> {
   //******************
 
 
-  void onAddPressed()                                                        // runs when user presses ADD on the notes popup
+  void onAddPressed(String text)                                                        // runs when user presses ADD on the notes popup
   {
     // TODO: This needs to get implemented fully. It's not clearing everything out of shared preferences and resetting on Add
     setState(() {
+      notesText = text;
       todaysEmotions.clear();
       print(todaysEmotions);
+      print(notesText);
+      notesController.clear();
     });
   }
 
