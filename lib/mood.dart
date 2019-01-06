@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'main.dart';
 
 class MoodWidgetState extends State<MoodWidget>
 {
@@ -74,6 +75,8 @@ class MoodWidgetState extends State<MoodWidget>
         onChanged: (bool newValue) {
           setState(() {
             newValue ? todaysEmotions.add(emotion) : todaysEmotions.remove(emotion);
+            print(todaysEmotions);
+            _saveEmotions(todaysEmotions);
           });
         }
       ),

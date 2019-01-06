@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'mood.dart';
+//import 'mood.dart';
 import 'meals.dart';
 import 'meds.dart';
 import 'package:platform_aware/platform_aware.dart';
@@ -52,21 +52,17 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
 enum Answer { CANCEL, ADD } // enum for pop up
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
-  List<String> _emotions = <String>[];
+  //List<String> _emotions = <String>[];
+  List<Widget> tabs = <Widget>[];                                               // the navigation bar tabs at the bottom
 
-  final List<Widget> _children = [
-    // creates the 3 tabs source codes at the bottom of the screen
-    MoodWidget(),
-    MealsWidget(Colors.white),
-    MedsWidget(Colors.white),
-  ];
+
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Pop-up dialog code
@@ -80,6 +76,110 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<Null> _askuser() async {
+
+    var now = new DateTime.now();
+    String dayOfWeek = '';
+    String month = '';
+    int hour = now.hour;
+    String amPM = '';
+    String minutes = now.minute.toString();
+
+    // set Day of Week
+    switch(now.weekday)
+    {
+      case 1:
+        dayOfWeek = "Monday";
+        break;
+      case 2:
+        dayOfWeek = "Tuesday";
+        break;
+      case 3:
+        dayOfWeek = "Wednesday";
+        break;
+      case 4:
+        dayOfWeek = "Thursday";
+        break;
+      case 5:
+        dayOfWeek = "Friday";
+        break;
+      case 6:
+        dayOfWeek = "Saturday";
+        break;
+      case 7:
+        dayOfWeek = "Sunday";
+        break;
+    }
+
+    // Set month
+    switch(now.month)
+    {
+      case 1:
+        month = "January";
+        break;
+      case 2:
+        month = "February";
+        break;
+      case 3:
+        month = "March";
+        break;
+      case 4:
+        month = "April";
+        break;
+      case 5:
+        month = "May";
+        break;
+      case 6:
+        month = "June";
+        break;
+      case 7:
+        month = "July";
+        break;
+      case 8:
+        month = "August";
+        break;
+      case 9:
+        month = "September";
+        break;
+      case 10:
+        month = "October";
+        break;
+      case 11:
+        month = "November";
+        break;
+      case 12:
+        month = "December";
+        break;
+
+    }
+
+    // set AM or PM
+    if (hour < 12)
+    {
+      amPM = 'AM';
+    }
+    else
+      {
+        amPM = 'PM';
+      }
+
+    // sets 12 hour time
+    if (hour == 0)
+      {
+        hour = 12;
+      }
+      else if (hour > 12)
+        {
+          hour -= 12;
+        }
+
+
+    // sets minutes formatted with leading zero as needed
+    if (now.minute < 10)
+      {
+        minutes = '0${now.minute}';
+      }
+
+
     // TODO: Finish popup design for New Journal Entry
     switch (await showDialog(
         context: context,
@@ -97,7 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Center(
                   child: Container(
                       child: Text(
-                          'Wednesday, January 2, 2019 ~ 6:00 PM',
+                          '$dayOfWeek, $month ${now.day}, ${now.year} ~ $hour:$minutes $amPM',
                           style: TextStyle(
                             fontSize: 15,
                           ),
@@ -133,9 +233,26 @@ class _MyHomePageState extends State<MyHomePage> {
                       maxHeight: 42,
                   ),
                   child: TextField(
+                    autofocus: true,
+                    textCapitalization: TextCapitalization.sentences,
                     maxLines: 3,
+                    decoration: InputDecoration(
+                        labelText: 'Notes',
+                        labelStyle: TextStyle(color: Theme.of(context).hintColor)
+                    ),
                   ),
                 ),
+              ],
+            ),
+
+
+            Row(                                                                // clear divider to make the text input field not overlap the cancel and add buttons
+              children: <Widget>[
+                Container(
+                  color: Colors.transparent,
+                  height: 30,
+                  width: 150,
+                )
               ],
             ),
 
@@ -153,10 +270,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 new FlatButton(
                   onPressed: (() {
                     Navigator.pop(context, Answer.ADD);
-                    print(_emotions);
                     onAddPressed();
-                    _emotions = [];
-                    print(_emotions);
                   }),
                   child: Text('ADD'),
                   textColor: Theme.of(context).accentColor,
@@ -187,8 +301,8 @@ class _MyHomePageState extends State<MyHomePage> {
 //            return new VerticalDivider();
 //          }
 //          final int index = i ~/ 2;
-          if(index < _emotions.length){
-            return _buildTile(_emotions[index]);
+          if(index < todaysEmotions.length){
+            return _buildTile(todaysEmotions[index]);
           }
         }
     );
@@ -237,16 +351,35 @@ class _MyHomePageState extends State<MyHomePage> {
     super.setState(fn);
   }
 
+
+  @override                                                                     // prevents users from adding a note with no emotions
+  void initState()
+  {
+
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    void _onButtonPressed() {
+
+    tabs = [
+      // creates the 3 tabs source codes at the bottom of the screen
+      Container(
+          child: _buildEmotionList()
+      ),
+      MealsWidget(Colors.white),
+      MedsWidget(Colors.white),
+    ];
+
+
+    void onButtonPressed() {
       // action that floating button takes
 
-      setState(() {
-        _getEmotionsPreferences().then(updateEmotions);
-        print(_emotions);
-        _askuser();
-      });
+      //setState(() {
+        //_getEmotionsPreferences().then(updateEmotions);
+        print(todaysEmotions);
+        todaysEmotions.length > 0 ? _askuser() : null;
+     // });
     }
 
     void onTabTapped(int index) {
@@ -258,13 +391,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 
-//    void onAddPressed()                                                        // runs when user presses ADD on the notes popup
-//    {
-//      setState(() {
-//        _clearEmotionsPreferences().then(updateEmotions);
-//        print(_emotions);
-//      });
-//    }
 
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
@@ -279,7 +405,7 @@ class _MyHomePageState extends State<MyHomePage> {
         leading: Icon(Icons.menu),
         title: Text(widget.title),
       ),
-      body: _children[_currentIndex],
+      body: tabs[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabTapped,
         currentIndex: _currentIndex,
@@ -308,7 +434,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
       floatingActionButton: FloatingActionButton(
-        onPressed: _onButtonPressed,
+        onPressed: () { //
+          onButtonPressed();
+        },
         child: Icon(Icons.add),
         backgroundColor: Colors.red.withAlpha(200),
       ), // This trailing comma makes auto-formatting nicer for build methods.
@@ -322,13 +450,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //****************
 
-  Future<List<String>> _getEmotionsPreferences() async {                        // Get emotions from Saved Preferences
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> emotions = prefs.getStringList("emotions");
-
-
-    return emotions;
-  }
 
 
 
@@ -339,8 +460,8 @@ class _MyHomePageState extends State<MyHomePage> {
   {
     // TODO: This needs to get implemented fully. It's not clearing everything out of shared preferences and resetting on Add
     setState(() {
-      _clearEmotionsPreferences().then(updateEmotions);
-      print(_emotions);
+      todaysEmotions.clear();
+      print(todaysEmotions);
     });
   }
 
@@ -348,14 +469,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 
-  Future<List<String>> _clearEmotionsPreferences() async {                        // Clear emotions from Saved Preferences
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove("emotions");
-    List<String> emotions = [];
 
-
-    return emotions;
-  }
 
 
 
@@ -366,9 +480,119 @@ class _MyHomePageState extends State<MyHomePage> {
   //***************************
 
 
-  void updateEmotions(List<String> emotions) {                                  // Restore Shared Preferences emotions into local variable
-    setState(() {
-      this._emotions = emotions;
-    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////
+  //                         MOOD
+
+  final String mood = '';
+
+  List<String> emotions = <String>[
+    'Happy',
+    'Angry',
+    'Sad',
+    'Scared',
+    'Tired',
+    'Wiggly',
+    'Hyper',
+    'Grumpy',
+    'Robotic',
+    'Calm',
+  ];
+
+  List<String> todaysEmotions = <String>[];
+
+
+//
+//                                                      // build widget for the State class UI
+//  Widget MoodWidget(){
+//    return Container(
+//
+//      child: _buildEmotionList(),
+//    );
+//  }
+
+
+  Widget _buildEmotionList()                                     // builds the ListView
+  {
+    return new ListView.builder(
+        itemBuilder: (BuildContext _context, int i)
+        {
+          if(i.isOdd)
+          {
+            return new Divider();
+          }
+          final int index = i ~/ 2;
+          if(index < emotions.length){
+            return _buildRow(emotions[index]);
+          }
+        }
+    );
   }
+
+
+  Widget _buildRow(String emotion)                                      // builds the row in the ListView
+  {
+    bool emotionSelected = todaysEmotions.contains(emotion);
+
+    return new ListTile(
+      leading: Image(
+        image: AssetImage('graphics/$emotion.png'.toLowerCase()),
+        height: 32.0,
+      ),
+      title: new Text(emotion),
+
+      onTap: () {
+        setState(() {
+          emotionSelected ? todaysEmotions.remove(emotion) : todaysEmotions.add(emotion);
+          print(todaysEmotions);
+
+        });
+      },
+        trailing: new Checkbox(
+          value: emotionSelected,
+          onChanged: (bool newValue) {
+            setState(() {
+              newValue ? todaysEmotions.add(emotion) : todaysEmotions.remove(emotion);
+              print(emotionSelected);
+              emotionSelected = newValue;
+              print(emotionSelected);
+
+            });
+          }
+      ),
+    );
+  }
+
+
+}
+
+
+class MoodWidget extends StatefulWidget
+{
+  @override
+  MoodWidgetState createState() => new MoodWidgetState();
+
+}
+
+class MoodWidgetState extends State<MoodWidget>
+{
+  @override
+  Widget build(BuildContext context) {
+    //
+    return Container(
+        child: MyHomePageState()._buildEmotionList());
+  }
+
 }
