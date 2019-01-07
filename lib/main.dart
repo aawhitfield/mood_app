@@ -24,9 +24,19 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primaryColor: Colors.blue.shade700,
+        primaryColor: Colors.blue.shade500,
         //accentColor: Colors.red.withAlpha(200),
-        accentColor: Colors.teal[500],
+        accentColor: Colors.lightBlue[500], //Colors.teal[500],
+        primaryColorDark: Colors.blue.shade700,
+        primaryColorLight: Colors.blue.shade100,
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
+        dividerColor: Colors.grey.shade400,
+
+
+
+
         fontFamily: Theme.of(context).platform == TargetPlatform.iOS
             ? 'SF-Pro-Text'
             : 'Roboto',
@@ -382,7 +392,6 @@ class MyHomePageState extends State<MyHomePage> {
 
       //setState(() {
         //_getEmotionsPreferences().then(updateEmotions);
-        print(todaysEmotions);
         todaysEmotions.length > 0 ? _askuser() : null;
      // });
     }
@@ -394,7 +403,12 @@ class MyHomePageState extends State<MyHomePage> {
     }
 
 
+    void _displayMenu()
+    {
+      setState(() {
 
+      });
+    }
 
 
     // This method is rerun every time setState is called, for instance as done
@@ -407,7 +421,11 @@ class MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        leading: Icon(Icons.menu),
+        leading: new IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: _displayMenu,
+        ),
+
         title: Text(widget.title),
       ),
       body: tabs[_currentIndex],
@@ -443,7 +461,7 @@ class MyHomePageState extends State<MyHomePage> {
           onButtonPressed();
         },
         child: Icon(Icons.add),
-        backgroundColor: Colors.red.withAlpha(200),
+        //backgroundColor: Theme.of(context).primaryColor,//Colors.red.withAlpha(200),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
@@ -467,8 +485,6 @@ class MyHomePageState extends State<MyHomePage> {
     setState(() {
       notesText = text;
       todaysEmotions.clear();
-      print(todaysEmotions);
-      print(notesText);
       notesController.clear();
     });
   }
@@ -564,7 +580,6 @@ class MyHomePageState extends State<MyHomePage> {
       onTap: () {
         setState(() {
           emotionSelected ? todaysEmotions.remove(emotion) : todaysEmotions.add(emotion);
-          print(todaysEmotions);
 
         });
       },
@@ -573,9 +588,7 @@ class MyHomePageState extends State<MyHomePage> {
           onChanged: (bool newValue) {
             setState(() {
               newValue ? todaysEmotions.add(emotion) : todaysEmotions.remove(emotion);
-              print(emotionSelected);
               emotionSelected = newValue;
-              print(emotionSelected);
 
             });
           }
