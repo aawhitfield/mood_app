@@ -421,10 +421,6 @@ class MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        leading: new IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: _displayMenu,
-        ),
 
         title: Text(widget.title),
       ),
@@ -446,6 +442,47 @@ class MyHomePageState extends State<MyHomePage> {
             title: new Text('Meds'),
           ),
         ],
+      ),
+
+
+      drawer: new Drawer(
+        child: new ListView(
+          children: <Widget>[
+            new UserAccountsDrawerHeader(
+                accountName: new Text('Ethan'),
+                accountEmail: null,
+                currentAccountPicture: new CircleAvatar(
+                  child: new Text('E'),),
+                otherAccountsPictures: <Widget>[
+                  CircleAvatar(
+                    child: Text('K'),
+                  ),
+                  CircleAvatar(
+                    child: Text('S'),
+                  ),
+                ]
+
+
+            ),
+
+            new ListTile(
+              leading: Icon(Icons.calendar_today),
+              title: Text('Calendar View'),
+            ),
+
+
+            new ListTile(
+              leading: Icon(Icons.add),
+              title: Text('Add Account'),
+            ),
+
+
+            new ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+            )
+          ],
+        )
       ),
 
 
