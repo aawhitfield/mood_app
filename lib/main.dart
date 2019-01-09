@@ -5,43 +5,71 @@ import 'meals.dart';
 import 'meds.dart';
 import 'package:platform_aware/platform_aware.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'calendar_view.dart';
+import 'entry.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   // This widget is the root of your application.
   @override
+  MyAppState createState() {
+    return new MyAppState();
+  }
+}
+
+class MyAppState extends State<MyApp> {
+
+
+  ThemeData blueTheme = new ThemeData(
+    primaryColor: Colors.blue.shade500,
+    accentColor: Colors.lightBlue[500], //Colors.teal[500],
+    primaryColorDark: Colors.blue.shade700,
+    primaryColorLight: Colors.blue.shade100,
+    iconTheme: IconThemeData(
+      color: Colors.white,
+    ),
+    dividerColor: Colors.grey.shade400,
+  );
+
+  ThemeData redTheme = new ThemeData(
+    primaryColor: Colors.red,
+    accentColor: Colors.redAccent
+  );
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return new MaterialApp(
       title: 'Tracker App',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primaryColor: Colors.blue.shade500,
-        //accentColor: Colors.red.withAlpha(200),
-        accentColor: Colors.lightBlue[500], //Colors.teal[500],
-        primaryColorDark: Colors.blue.shade700,
-        primaryColorLight: Colors.blue.shade100,
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
-        dividerColor: Colors.grey.shade400,
-
-
-
-
-        fontFamily: Theme.of(context).platform == TargetPlatform.iOS
-            ? 'SF-Pro-Text'
-            : 'Roboto',
-        //toggleableActiveColor: Colors.red.withAlpha(200),
-      ),
+      theme: blueTheme,
+//        theme: ThemeData(
+      // This is the theme of your application.
+      //
+      // Try running your application with "flutter run". You'll see the
+      // application has a blue toolbar. Then, without quitting the app, try
+      // changing the primarySwatch below to Colors.green and then invoke
+      // "hot reload" (press "r" in the console where you ran "flutter run",
+      // or simply save your changes to "hot reload" in a Flutter IDE).
+      // Notice that the counter didn't reset back to zero; the application
+      // is not restarted.
+//          primaryColor: Colors.blue.shade500,
+//          //accentColor: Colors.red.withAlpha(200),
+//          accentColor: Colors.lightBlue[500], //Colors.teal[500],
+//          primaryColorDark: Colors.blue.shade700,
+//          primaryColorLight: Colors.blue.shade100,
+//          iconTheme: IconThemeData(
+//            color: Colors.white,
+//          ),
+//          dividerColor: Colors.grey.shade400,
+//
+//
+//
+//
+//          fontFamily: Theme.of(context).platform == TargetPlatform.iOS
+//              ? 'SF-Pro-Text'
+//              : 'Roboto',
+//          //toggleableActiveColor: Colors.red.withAlpha(200),
+//        ),
       home: MyHomePage(title: 'Tracker App'),
     );
   }
@@ -69,12 +97,11 @@ enum Answer { CANCEL, ADD } // enum for pop up
 
 class MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
-  //List<String> _emotions = <String>[];
-  List<Widget> tabs = <Widget>[];                                               // the navigation bar tabs at the bottom
-  String notesText = '';                                                        // value of the notes section
+  List<Widget> tabs = <Widget>[]; // the navigation bar tabs at the bottom
+  String notesText = ''; // value of the notes section
   TextEditingController notesController = new TextEditingController();
-
-
+  DateTime now;
+  Entry newEntry;
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Pop-up dialog code
@@ -88,8 +115,7 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   Future<Null> _askuser() async {
-
-    var now = new DateTime.now();
+    now = new DateTime.now();
     String dayOfWeek = '';
     String month = '';
     int hour = now.hour;
@@ -97,8 +123,7 @@ class MyHomePageState extends State<MyHomePage> {
     String minutes = now.minute.toString();
 
     // set Day of Week
-    switch(now.weekday)
-    {
+    switch (now.weekday) {
       case 1:
         dayOfWeek = "Monday";
         break;
@@ -123,8 +148,7 @@ class MyHomePageState extends State<MyHomePage> {
     }
 
     // Set month
-    switch(now.month)
-    {
+    switch (now.month) {
       case 1:
         month = "January";
         break;
@@ -161,88 +185,77 @@ class MyHomePageState extends State<MyHomePage> {
       case 12:
         month = "December";
         break;
-
     }
 
     // set AM or PM
-    if (hour < 12)
-    {
+    if (hour < 12) {
       amPM = 'AM';
+    } else {
+      amPM = 'PM';
     }
-    else
-      {
-        amPM = 'PM';
-      }
 
     // sets 12 hour time
-    if (hour == 0)
-      {
-        hour = 12;
-      }
-      else if (hour > 12)
-        {
-          hour -= 12;
-        }
-
+    if (hour == 0) {
+      hour = 12;
+    } else if (hour > 12) {
+      hour -= 12;
+    }
 
     // sets minutes formatted with leading zero as needed
-    if (now.minute < 10)
-      {
-        minutes = '0${now.minute}';
-      }
-
+    if (now.minute < 10) {
+      minutes = '0${now.minute}';
+    }
 
     // TODO: Finish popup design for New Journal Entry
     switch (await showDialog(
         context: context,
         child: new SimpleDialog(
           title: new Text(
-              'New Journal Entry',
-              style: TextStyle(
-                fontFamily: "Roboto",
-                fontWeight: FontWeight.w600,
-              ),
+            'New Journal Entry',
+            style: TextStyle(
+              fontFamily: "Roboto",
+              fontWeight: FontWeight.w600,
+            ),
           ),
           children: <Widget>[
-            Row(                                                                // time date stamp
+            Row(
+              // time date stamp
               children: <Widget>[
                 Center(
                   child: Container(
-                      child: Text(
-                          '$dayOfWeek, $month ${now.day}, ${now.year} ~ $hour:$minutes $amPM',
-                          style: TextStyle(
-                            fontSize: 15,
-                          ),
-                        textAlign: TextAlign.center,
+                    child: Text(
+                      '$dayOfWeek, $month ${now.day}, ${now.year} ~ $hour:$minutes $amPM',
+                      style: TextStyle(
+                        fontSize: 15,
                       ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
               ],
               mainAxisAlignment: MainAxisAlignment.center,
             ),
-            Row(                                                                // Emotions list
+            Row(
+              // Emotions list
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
 
               children: <Widget>[
-               Container(
-                 height: 14.0,
-                 width: 250,
-                 child: _buildEmojiList(),
+                Container(
+                  height: 14.0,
+                  width: 250,
+                  child: _buildEmojiList(),
                 ),
               ],
-
             ),
-
-
-            Row(                                                                // user text field input for notes section
-              // TODO: implement notes section
+            Row(
+              // user text field input for notes section
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 ConstrainedBox(
                   constraints: BoxConstraints(
-                      maxWidth: 250,
-                      maxHeight: 42,
+                    maxWidth: 250,
+                    maxHeight: 42,
                   ),
                   child: TextField(
                     autofocus: true,
@@ -251,16 +264,15 @@ class MyHomePageState extends State<MyHomePage> {
                     maxLines: 3,
                     decoration: InputDecoration(
                         labelText: 'Notes',
-                        labelStyle: TextStyle(color: Theme.of(context).hintColor)
-                    ),
+                        labelStyle:
+                            TextStyle(color: Theme.of(context).hintColor)),
                     onSubmitted: (String text) => onAddPressed,
                   ),
                 ),
               ],
             ),
-
-
-            Row(                                                                // clear divider to make the text input field not overlap the cancel and add buttons
+            Row(
+              // clear divider to make the text input field not overlap the cancel and add buttons
               children: <Widget>[
                 Container(
                   color: Colors.transparent,
@@ -269,9 +281,8 @@ class MyHomePageState extends State<MyHomePage> {
                 )
               ],
             ),
-
-
-            Row(                                                                // action buttons
+            Row(
+              // action buttons
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 new FlatButton(
@@ -305,26 +316,23 @@ class MyHomePageState extends State<MyHomePage> {
 
   //////////////////// build emoji list tiles for notes section/////////////////////
 
-  Widget _buildEmojiList()                                     // builds the ListView
+  Widget _buildEmojiList() // builds the ListView
   {
     return new ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemBuilder: (BuildContext _context, int index)
-        {
+        itemBuilder: (BuildContext _context, int index) {
 //          if(i.isOdd)
 //          {
 //            return new VerticalDivider();
 //          }
 //          final int index = i ~/ 2;
-          if(index < todaysEmotions.length){
+          if (index < todaysEmotions.length) {
             return _buildTile(todaysEmotions[index]);
           }
-        }
-    );
+        });
   }
 
-
-  Widget _buildTile(String emotion)                                      // builds the row in the ListView
+  Widget _buildTile(String emotion) // builds the row in the ListView
   {
     return new Container(
       width: 60,
@@ -333,15 +341,14 @@ class MyHomePageState extends State<MyHomePage> {
       alignment: Alignment.topLeft,
       child: Row(
         children: <Widget>[
-        Image(
-          image: AssetImage(
-          'graphics/$emotion.png'.toLowerCase(),
+          Image(
+            image: AssetImage(
+              'graphics/$emotion.png'.toLowerCase(),
+            ),
+            width: 14,
+            height: 14,
           ),
-          width: 14,
-          height: 14,
-        ),
-
-        Text(
+          Text(
             emotion,
             style: TextStyle(
               fontSize: 12,
@@ -354,9 +361,6 @@ class MyHomePageState extends State<MyHomePage> {
 
   //////////////////////end emoji label list view for notes section
 
-
-
-
   // end pop up code
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -366,50 +370,32 @@ class MyHomePageState extends State<MyHomePage> {
     super.setState(fn);
   }
 
-
-  @override                                                                     // prevents users from adding a note with no emotions
-  void initState()
-  {
-
-  }
-
+  @override // prevents users from adding a note with no emotions
+  void initState() {}
 
   @override
   Widget build(BuildContext context) {
-
     tabs = [
       // creates the 3 tabs source codes at the bottom of the screen
-      Container(
-          child: _buildEmotionList()
-      ),
+      Container(child: _buildEmotionList()),
       MealsWidget(Colors.white),
       MedsWidget(Colors.white),
     ];
-
 
     void onButtonPressed() {
       // action that floating button takes
 
       //setState(() {
-        //_getEmotionsPreferences().then(updateEmotions);
-        todaysEmotions.length > 0 ? _askuser() : null;
-     // });
+      todaysEmotions.length > 0 ? _askuser() : null;
+      // });
     }
 
     void onTabTapped(int index) {
       setState(() {
         _currentIndex = index;
-      });
-    }
-
-
-    void _displayMenu()
-    {
-      setState(() {
 
       });
     }
-
 
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
@@ -444,57 +430,50 @@ class MyHomePageState extends State<MyHomePage> {
         ],
       ),
 
-
       drawer: new Drawer(
-        child: new ListView(
-          children: <Widget>[
-            new UserAccountsDrawerHeader(
-                accountName: new Text('Ethan'),
-                accountEmail: null,
-                currentAccountPicture: new CircleAvatar(
-                  child: new Text('E'),),
-                otherAccountsPictures: <Widget>[
-                  CircleAvatar(
-                    child: Text('K'),
-                  ),
-                  CircleAvatar(
-                    child: Text('S'),
-                  ),
-                ]
-
-
-            ),
-
-            new ListTile(
-              leading: Icon(Icons.calendar_today),
-              title: Text('Calendar View'),
-            ),
-
-
-            new ListTile(
-              leading: Icon(Icons.add),
-              title: Text('Add Account'),
-            ),
-
-
-            new ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
-            )
-          ],
-        )
-      ),
-
-
-
-
-
-
-
-
+          child: new ListView(
+        children: <Widget>[
+          new UserAccountsDrawerHeader(
+              accountName: new Text('Ethan'),
+              accountEmail: null,
+              currentAccountPicture: new CircleAvatar(
+                child: new Text('E'),
+              ),
+              otherAccountsPictures: <Widget>[
+                CircleAvatar(
+                  child: Text('K'),
+                ),
+                CircleAvatar(
+                  child: Text('S'),
+                ),
+              ]),
+          new ListTile(
+            leading: Icon(Icons.calendar_today),
+            title: Text('Calendar View'),
+            onTap: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).push(
+                  new MaterialPageRoute(
+                      builder: (BuildContext context) => new CalendarView(
+                        entry: newEntry,
+                      )
+                  ));
+            },
+          ),
+          new ListTile(
+            leading: Icon(Icons.add),
+            title: Text('Add Account'),
+          ),
+          new ListTile(
+            leading: Icon(Icons.settings),
+            title: Text('Settings'),
+          )
+        ],
+      )),
 
       floatingActionButton: FloatingActionButton(
-        onPressed: () { //
+        onPressed: () {
+          //
           onButtonPressed();
         },
         child: Icon(Icons.add),
@@ -503,56 +482,23 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
-
-
-
-
-
   //****************
-
-
-
 
   //******************
 
-
-  void onAddPressed(String text)                                                        // runs when user presses ADD on the notes popup
+  void onAddPressed(
+      String text) // runs when user presses ADD on the notes popup
   {
     // TODO: This needs to get implemented fully. It's not clearing everything out of shared preferences and resetting on Add
     setState(() {
       notesText = text;
+      newEntry = Entry(now, notesText);
       todaysEmotions.clear();
       notesController.clear();
     });
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
   //***************************
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /////////////////////////////////////////////////////////////////////
   //                         MOOD
@@ -574,7 +520,6 @@ class MyHomePageState extends State<MyHomePage> {
 
   List<String> todaysEmotions = <String>[];
 
-
 //
 //                                                      // build widget for the State class UI
 //  Widget MoodWidget(){
@@ -584,26 +529,20 @@ class MyHomePageState extends State<MyHomePage> {
 //    );
 //  }
 
-
-  Widget _buildEmotionList()                                     // builds the ListView
+  Widget _buildEmotionList() // builds the ListView
   {
-    return new ListView.builder(
-        itemBuilder: (BuildContext _context, int i)
-        {
-          if(i.isOdd)
-          {
-            return new Divider();
-          }
-          final int index = i ~/ 2;
-          if(index < emotions.length){
-            return _buildRow(emotions[index]);
-          }
-        }
-    );
+    return new ListView.builder(itemBuilder: (BuildContext _context, int i) {
+      if (i.isOdd) {
+        return new Divider();
+      }
+      final int index = i ~/ 2;
+      if (index < emotions.length) {
+        return _buildRow(emotions[index]);
+      }
+    });
   }
 
-
-  Widget _buildRow(String emotion)                                      // builds the row in the ListView
+  Widget _buildRow(String emotion) // builds the row in the ListView
   {
     bool emotionSelected = todaysEmotions.contains(emotion);
 
@@ -613,44 +552,36 @@ class MyHomePageState extends State<MyHomePage> {
         height: 32.0,
       ),
       title: new Text(emotion),
-
       onTap: () {
         setState(() {
-          emotionSelected ? todaysEmotions.remove(emotion) : todaysEmotions.add(emotion);
-
+          emotionSelected
+              ? todaysEmotions.remove(emotion)
+              : todaysEmotions.add(emotion);
         });
       },
-        trailing: new Checkbox(
+      trailing: new Checkbox(
           value: emotionSelected,
           onChanged: (bool newValue) {
             setState(() {
-              newValue ? todaysEmotions.add(emotion) : todaysEmotions.remove(emotion);
+              newValue
+                  ? todaysEmotions.add(emotion)
+                  : todaysEmotions.remove(emotion);
               emotionSelected = newValue;
-
             });
-          }
-      ),
+          }),
     );
   }
-
-
 }
 
-
-class MoodWidget extends StatefulWidget
-{
+class MoodWidget extends StatefulWidget {
   @override
   MoodWidgetState createState() => new MoodWidgetState();
-
 }
 
-class MoodWidgetState extends State<MoodWidget>
-{
+class MoodWidgetState extends State<MoodWidget> {
   @override
   Widget build(BuildContext context) {
     //
-    return Container(
-        child: MyHomePageState()._buildEmotionList());
+    return Container(child: MyHomePageState()._buildEmotionList());
   }
-
 }
