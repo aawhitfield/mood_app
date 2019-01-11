@@ -7,6 +7,7 @@ import 'package:platform_aware/platform_aware.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'calendar_view.dart';
 import 'entry.dart';
+import 'format_date_time.dart';
 
 void main() => runApp(MyApp());
 
@@ -96,12 +97,15 @@ class MyHomePage extends StatefulWidget {
 enum Answer { CANCEL, ADD } // enum for pop up
 
 class MyHomePageState extends State<MyHomePage> {
-  int _currentIndex = 0;
+  int _currentIndex = 1;
+  int _calendarIndex = 0;
   List<Widget> tabs = <Widget>[]; // the navigation bar tabs at the bottom
   String notesText = ''; // value of the notes section
   TextEditingController notesController = new TextEditingController();
   DateTime now;
   Entry newEntry;
+  List<Entry> journal = <Entry>[];
+  final _scaffoldKey = GlobalKey<ScaffoldState>();                              // sets a key to Scaffold so we can refer to it to call a Snackbar to alert users when entry has been added
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Pop-up dialog code
@@ -116,96 +120,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   Future<Null> _askuser() async {
     now = new DateTime.now();
-    String dayOfWeek = '';
-    String month = '';
-    int hour = now.hour;
-    String amPM = '';
-    String minutes = now.minute.toString();
-
-    // set Day of Week
-    switch (now.weekday) {
-      case 1:
-        dayOfWeek = "Monday";
-        break;
-      case 2:
-        dayOfWeek = "Tuesday";
-        break;
-      case 3:
-        dayOfWeek = "Wednesday";
-        break;
-      case 4:
-        dayOfWeek = "Thursday";
-        break;
-      case 5:
-        dayOfWeek = "Friday";
-        break;
-      case 6:
-        dayOfWeek = "Saturday";
-        break;
-      case 7:
-        dayOfWeek = "Sunday";
-        break;
-    }
-
-    // Set month
-    switch (now.month) {
-      case 1:
-        month = "January";
-        break;
-      case 2:
-        month = "February";
-        break;
-      case 3:
-        month = "March";
-        break;
-      case 4:
-        month = "April";
-        break;
-      case 5:
-        month = "May";
-        break;
-      case 6:
-        month = "June";
-        break;
-      case 7:
-        month = "July";
-        break;
-      case 8:
-        month = "August";
-        break;
-      case 9:
-        month = "September";
-        break;
-      case 10:
-        month = "October";
-        break;
-      case 11:
-        month = "November";
-        break;
-      case 12:
-        month = "December";
-        break;
-    }
-
-    // set AM or PM
-    if (hour < 12) {
-      amPM = 'AM';
-    } else {
-      amPM = 'PM';
-    }
-
-    // sets 12 hour time
-    if (hour == 0) {
-      hour = 12;
-    } else if (hour > 12) {
-      hour -= 12;
-    }
-
-    // sets minutes formatted with leading zero as needed
-    if (now.minute < 10) {
-      minutes = '0${now.minute}';
-    }
-
+    String formattedDateTime = formatDateTime(now);
     // TODO: Finish popup design for New Journal Entry
     switch (await showDialog(
         context: context,
@@ -223,8 +138,7 @@ class MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 Center(
                   child: Container(
-                    child: Text(
-                      '$dayOfWeek, $month ${now.day}, ${now.year} ~ $hour:$minutes $amPM',
+                    child: Text(formattedDateTime,
                       style: TextStyle(
                         fontSize: 15,
                       ),
@@ -297,6 +211,14 @@ class MyHomePageState extends State<MyHomePage> {
                     Navigator.pop(context, Answer.ADD);
                     onAddPressed(notesController.text);
                     notesController.clear();
+
+                    // let user know action was successful
+                    final snackbar = new SnackBar(
+                        content: Text(
+                          'Entry added',
+                        ),
+                    );
+                    _scaffoldKey.currentState.showSnackBar(snackbar);
                   }),
                   child: Text('ADD'),
                   textColor: Theme.of(context).accentColor,
@@ -376,7 +298,9 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     tabs = [
-      // creates the 3 tabs source codes at the bottom of the screen
+      // creates the 4 tabs source codes at the bottom of the screen
+
+      CalendarView(entries: journal,),
       Container(child: _buildEmotionList()),
       MealsWidget(Colors.white),
       MedsWidget(Colors.white),
@@ -411,10 +335,17 @@ class MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: tabs[_currentIndex],
+      key: _scaffoldKey,
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabTapped,
         currentIndex: _currentIndex,
+        type: BottomNavigationBarType.fixed,
         items: [
+
+          BottomNavigationBarItem(
+            icon: new Icon(Icons.calendar_today),
+            title: new Text('Calendar'),
+          ),
           BottomNavigationBarItem(
             icon: new Icon(Icons.mood),
             title: new Text('Mood'),
@@ -427,9 +358,10 @@ class MyHomePageState extends State<MyHomePage> {
             icon: new Icon(Icons.local_pharmacy),
             title: new Text('Meds'),
           ),
+
         ],
       ),
-
+// TODO: make Drawer have dynamic content
       drawer: new Drawer(
           child: new ListView(
         children: <Widget>[
@@ -450,12 +382,12 @@ class MyHomePageState extends State<MyHomePage> {
           new ListTile(
             leading: Icon(Icons.calendar_today),
             title: Text('Calendar View'),
-            onTap: () {
+            onTap: () {// TODO: Don't allow Calendar to crash when try to load empty list
               Navigator.of(context).pop();
               Navigator.of(context).push(
                   new MaterialPageRoute(
                       builder: (BuildContext context) => new CalendarView(
-                        entry: newEntry,
+                        entries: journal,
                       )
                   ));
             },
@@ -471,7 +403,7 @@ class MyHomePageState extends State<MyHomePage> {
         ],
       )),
 
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: _currentIndex == _calendarIndex ? null : FloatingActionButton(    // deactivates Floating Action Button on Calendar tab
         onPressed: () {
           //
           onButtonPressed();
@@ -486,13 +418,15 @@ class MyHomePageState extends State<MyHomePage> {
 
   //******************
 
-  void onAddPressed(
+  void onAddPressed(// todo: submit on Return key too?
       String text) // runs when user presses ADD on the notes popup
   {
-    // TODO: This needs to get implemented fully. It's not clearing everything out of shared preferences and resetting on Add
+    //
     setState(() {
       notesText = text;
-      newEntry = Entry(now, notesText);
+      List<String> tempList = todaysEmotions.toList();
+      newEntry = Entry(now, notesText, tempList);
+      journal.add(newEntry);// todo: make data permanent with some kind of long-term storage solution
       todaysEmotions.clear();
       notesController.clear();
     });

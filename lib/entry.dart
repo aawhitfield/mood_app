@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
-
 class Entry
 {
   DateTime eventTime;
   String eventNotes;
+  List<String> emotionList;
 
-  Entry(this.eventTime, this.eventNotes);
+  Entry(this.eventTime, this.eventNotes, this.emotionList);
 
 
 }
