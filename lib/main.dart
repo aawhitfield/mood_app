@@ -8,6 +8,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'calendar_view.dart';
 import 'entry.dart';
 import 'format_date_time.dart';
+import 'save_journal.dart';
+import 'save.dart';
+import 'dart:convert';
+import 'retrieve.dart';
 
 void main() => runApp(MyApp());
 
@@ -106,6 +110,7 @@ class MyHomePageState extends State<MyHomePage> {
   Entry newEntry;
   List<Entry> journal = <Entry>[];
   final _scaffoldKey = GlobalKey<ScaffoldState>();                              // sets a key to Scaffold so we can refer to it to call a Snackbar to alert users when entry has been added
+  final String _journalKey = 'journalKey';
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Pop-up dialog code
@@ -270,10 +275,13 @@ class MyHomePageState extends State<MyHomePage> {
             width: 14,
             height: 14,
           ),
-          Text(
-            emotion,
-            style: TextStyle(
-              fontSize: 12,
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Text(
+              emotion,
+              style: TextStyle(
+                fontSize: 12,
+              ),
             ),
           ),
         ],
@@ -293,7 +301,35 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   @override // prevents users from adding a note with no emotions
-  void initState() {}
+  void initState() {  // TODO: figure out when/how to restore from Shared Preferences                                                          // load journal from SharedPreferences
+    journal.clear();
+    restoreListOfObjectsFromSharedPreferences(_journalKey).then((stringListOfObjects) {
+//     Map<String, dynamic> jsonList = json.decode(jsonString);
+//          for (int i = 0; i < jsonList.length; i++)
+//            {
+//              journal.add(Entry.fromJson(jsonList[i]));
+//            }
+
+      stringListOfObjects.forEach((stringObject) {
+        if(!stringObject.toString().endsWith('}')) {
+          stringObject += '}';
+        }
+
+        print("string Object:");
+        print(stringObject);
+        Map<String, dynamic> map = json.decode(stringObject);
+        print('Map: ');
+        print(map);
+        Entry entry = new Entry.fromJson(map);
+        print("Entry: ");
+        print(entry);
+        journal.add(entry);
+    });
+    print("Journal: ");
+    print(journal);
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -427,6 +463,8 @@ class MyHomePageState extends State<MyHomePage> {
       List<String> tempList = todaysEmotions.toList();
       newEntry = Entry(now, notesText, tempList);
       journal.add(newEntry);// todo: make data permanent with some kind of long-term storage solution
+
+      saveListOfObjectsToSharedPreferences(_journalKey, journal); // saves whole journal with new entry to SharedPreferences library
       todaysEmotions.clear();
       notesController.clear();
     });
