@@ -8,7 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'calendar_view.dart';
 import 'entry.dart';
 import 'format_date_time.dart';
-import 'save_journal.dart';
 import 'save.dart';
 import 'dart:convert';
 import 'retrieve.dart';
@@ -318,8 +317,13 @@ class MyHomePageState extends State<MyHomePage> {
         print("string Object:");
         print(stringObject);
         Map<String, dynamic> map = json.decode(stringObject);
+        String tempString = map['emotionList'];
+        print('tempstring');
+        print(tempString);
         print('Map: ');
         print(map);
+        print('EmotionList:');
+        print(map['emotionList']);
         Entry entry = new Entry.fromJson(map);
         print("Entry: ");
         print(entry);
@@ -462,7 +466,7 @@ class MyHomePageState extends State<MyHomePage> {
       notesText = text;
       List<String> tempList = todaysEmotions.toList();
       newEntry = Entry(now, notesText, tempList);
-      journal.add(newEntry);// todo: make data permanent with some kind of long-term storage solution
+      journal.add(newEntry);
 
       saveListOfObjectsToSharedPreferences(_journalKey, journal); // saves whole journal with new entry to SharedPreferences library
       todaysEmotions.clear();

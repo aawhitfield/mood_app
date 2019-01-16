@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
 class Entry
 {
   DateTime eventTime;
@@ -8,9 +11,20 @@ class Entry
 
   Entry.fromJson(Map<String, dynamic> entry)
   {
+    List<String> _toListString(string)
+    {
+      List<String> stringList = <String>[];
+      String formattedString = string.substring(1, string.length - 1);
+      stringList = formattedString.split(',');
+
+      return stringList;
+    }
+
     eventTime = DateTime.parse(entry['eventTime']);
     eventNotes = entry['eventNotes'];
-    emotionList = ['Happy']; // entry['emotionList']; // TODO: Import actual emotion instead of dummy code of HAPPY
+    emotionList =  _toListString(entry['emotionList']);
+
+
   }
 
 
