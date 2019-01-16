@@ -3,8 +3,6 @@ import 'package:flutter/cupertino.dart';
 //import 'mood.dart';
 import 'meals.dart';
 import 'meds.dart';
-import 'package:platform_aware/platform_aware.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'calendar_view.dart';
 import 'entry.dart';
 import 'format_date_time.dart';
@@ -275,7 +273,7 @@ class MyHomePageState extends State<MyHomePage> {
             height: 14,
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 8.0),
+            padding: const EdgeInsets.only(left: 4.0),
             child: Text(
               emotion,
               style: TextStyle(
@@ -300,37 +298,23 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   @override // prevents users from adding a note with no emotions
-  void initState() {  // TODO: figure out when/how to restore from Shared Preferences                                                          // load journal from SharedPreferences
-    journal.clear();
-    restoreListOfObjectsFromSharedPreferences(_journalKey).then((stringListOfObjects) {
-//     Map<String, dynamic> jsonList = json.decode(jsonString);
-//          for (int i = 0; i < jsonList.length; i++)
-//            {
-//              journal.add(Entry.fromJson(jsonList[i]));
-//            }
+  void initState() {    // load the Calendar view from Shared Preferences on initial State
+    journal.clear();    // clears the local variable to avoid duplicates
+    restoreListOfObjectsFromSharedPreferences(_journalKey).then((stringListOfObjects) { // restores List from SharedPreferences string key
 
-      stringListOfObjects.forEach((stringObject) {
+
+      stringListOfObjects.forEach((stringObject) {                              // formats List further so it parses back into Entry object correctly.
         if(!stringObject.toString().endsWith('}')) {
           stringObject += '}';
         }
 
-        print("string Object:");
-        print(stringObject);
-        Map<String, dynamic> map = json.decode(stringObject);
-        String tempString = map['emotionList'];
-        print('tempstring');
-        print(tempString);
-        print('Map: ');
-        print(map);
-        print('EmotionList:');
-        print(map['emotionList']);
-        Entry entry = new Entry.fromJson(map);
-        print("Entry: ");
-        print(entry);
-        journal.add(entry);
+        Map<String, dynamic> map = json.decode(stringObject);                   // uses JSON library to decode the string containing the List<Object> -> Map
+
+        Entry entry = new Entry.fromJson(map);                                  // creates Entry objects with contents of Map
+
+    journal.add(entry);                                                         // adds the Entry to journal List to complete the restore.
     });
-    print("Journal: ");
-    print(journal);
+
     });
 
   }
@@ -422,7 +406,7 @@ class MyHomePageState extends State<MyHomePage> {
           new ListTile(
             leading: Icon(Icons.calendar_today),
             title: Text('Calendar View'),
-            onTap: () {// TODO: Don't allow Calendar to crash when try to load empty list
+            onTap: () {
               Navigator.of(context).pop();
               Navigator.of(context).push(
                   new MaterialPageRoute(

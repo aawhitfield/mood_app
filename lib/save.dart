@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-//TODO: annotate save.dart with comments
+// saves a List of Any Objects into Shared Preferences. Take a key and parses into a string with JSON then saves the String.
+
+
 Future<void> saveListOfObjectsToSharedPreferences(String key, List objects) async
 {
   String _value = '';
