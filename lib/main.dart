@@ -115,7 +115,7 @@ class MyHomePageState extends State<MyHomePage> {
   String _answer = '';
   void setAnswer(String value) {
     setState(() {
-      // TODO: Does this need to be deleted altogether? It was sample code
+
       _answer = value;
     });
   }
@@ -123,7 +123,6 @@ class MyHomePageState extends State<MyHomePage> {
   Future<Null> _askuser() async {
     now = new DateTime.now();
     String formattedDateTime = formatDateTime(now);
-    // TODO: Finish popup design for New Journal Entry
     switch (await showDialog(
         context: context,
         child: new SimpleDialog(
@@ -183,6 +182,7 @@ class MyHomePageState extends State<MyHomePage> {
                         labelStyle:
                             TextStyle(color: Theme.of(context).hintColor)),
                     onSubmitted: (String text) => onAddPressed,
+                    textInputAction: TextInputAction.done,
                   ),
                 ),
               ],
@@ -408,21 +408,24 @@ class MyHomePageState extends State<MyHomePage> {
             title: Text('Calendar View'),
             onTap: () {
               Navigator.of(context).pop();
-              Navigator.of(context).push(
-                  new MaterialPageRoute(
-                      builder: (BuildContext context) => new CalendarView(
-                        entries: journal,
-                      )
-                  ));
+              setState(() {
+                _currentIndex = 0;
+              });
+//              Navigator.of(context).push(
+//                  new MaterialPageRoute(
+//                      builder: (BuildContext context) => new CalendarView(
+//                        entries: journal,
+//                      )
+//                  ));
             },
           ),
           new ListTile(
             leading: Icon(Icons.add),
-            title: Text('Add Account'),
+            title: Text('Add account'),
           ),
           new ListTile(
             leading: Icon(Icons.settings),
-            title: Text('Settings'),
+            title: Text('Manage accounts'),
           )
         ],
       )),
@@ -442,7 +445,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   //******************
 
-  void onAddPressed(// todo: submit on Return key too?
+  void onAddPressed(
       String text) // runs when user presses ADD on the notes popup
   {
     //
