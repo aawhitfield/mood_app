@@ -9,6 +9,7 @@ import 'format_date_time.dart';
 import 'save.dart';
 import 'dart:convert';
 import 'retrieve.dart';
+import 'drawer.dart';
 
 void main() => runApp(MyApp());
 
@@ -98,7 +99,7 @@ class MyHomePage extends StatefulWidget {
 enum Answer { CANCEL, ADD } // enum for pop up
 
 class MyHomePageState extends State<MyHomePage> {
-  int _currentIndex = 1;
+  int currentIndex = 1;
   int _calendarIndex = 0;
   List<Widget> tabs = <Widget>[]; // the navigation bar tabs at the bottom
   String notesText = ''; // value of the notes section
@@ -273,7 +274,7 @@ class MyHomePageState extends State<MyHomePage> {
             height: 14,
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 4.0),
+            padding: const EdgeInsets.only(left: 2.0),
             child: Text(
               emotion,
               style: TextStyle(
@@ -340,7 +341,7 @@ class MyHomePageState extends State<MyHomePage> {
 
     void onTabTapped(int index) {
       setState(() {
-        _currentIndex = index;
+        currentIndex = index;
 
       });
     }
@@ -358,11 +359,11 @@ class MyHomePageState extends State<MyHomePage> {
 
         title: Text(widget.title),
       ),
-      body: tabs[_currentIndex],
+      body: tabs[currentIndex],
       key: _scaffoldKey,
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabTapped,
-        currentIndex: _currentIndex,
+        currentIndex: currentIndex,
         type: BottomNavigationBarType.fixed,
         items: [
 
@@ -385,52 +386,9 @@ class MyHomePageState extends State<MyHomePage> {
 
         ],
       ),
-// TODO: make Drawer have dynamic content
-      drawer: new Drawer(
-          child: new ListView(
-        children: <Widget>[
-          new UserAccountsDrawerHeader(
-              accountName: new Text('Ethan'),
-              accountEmail: null,
-              currentAccountPicture: new CircleAvatar(
-                child: new Text('E'),
-              ),
-              otherAccountsPictures: <Widget>[
-                CircleAvatar(
-                  child: Text('K'),
-                ),
-                CircleAvatar(
-                  child: Text('S'),
-                ),
-              ]),
-          new ListTile(
-            leading: Icon(Icons.calendar_today),
-            title: Text('Calendar View'),
-            onTap: () {
-              Navigator.of(context).pop();
-              setState(() {
-                _currentIndex = 0;
-              });
-//              Navigator.of(context).push(
-//                  new MaterialPageRoute(
-//                      builder: (BuildContext context) => new CalendarView(
-//                        entries: journal,
-//                      )
-//                  ));
-            },
-          ),
-          new ListTile(
-            leading: Icon(Icons.add),
-            title: Text('Add account'),
-          ),
-          new ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Manage accounts'),
-          )
-        ],
-      )),
+      drawer: UserDrawer(this),
 
-      floatingActionButton: _currentIndex == _calendarIndex ? null : FloatingActionButton(    // deactivates Floating Action Button on Calendar tab
+      floatingActionButton: currentIndex == _calendarIndex ? null : FloatingActionButton(    // deactivates Floating Action Button on Calendar tab
         onPressed: () {
           //
           onButtonPressed();
