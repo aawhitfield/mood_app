@@ -326,7 +326,10 @@ class MyHomePageState extends State<MyHomePage> {
       // creates the 4 tabs source codes at the bottom of the screen
 
       CalendarView(entries: journal,),
-      Container(child: _buildEmotionList()),
+      Container(
+          child: _buildEmotionList(),
+          padding: EdgeInsets.only(bottom: 0.0),
+      ),
       MealsWidget(Colors.white),
       MedsWidget(Colors.white),
     ];
@@ -388,13 +391,16 @@ class MyHomePageState extends State<MyHomePage> {
       ),
       drawer: UserDrawer(this),
 
-      floatingActionButton: currentIndex == _calendarIndex ? null : FloatingActionButton(    // deactivates Floating Action Button on Calendar tab
-        onPressed: () {
-          //
-          onButtonPressed();
-        },
-        child: Icon(Icons.add),
-        //backgroundColor: Theme.of(context).primaryColor,//Colors.red.withAlpha(200),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(right: 0.0),
+        child: currentIndex == _calendarIndex ? null : FloatingActionButton(    // deactivates Floating Action Button on Calendar tab
+          onPressed: () {
+            //
+            onButtonPressed();
+          },
+          child: Icon(Icons.add),
+          //backgroundColor: Theme.of(context).primaryColor,//Colors.red.withAlpha(200),
+        ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
@@ -441,18 +447,13 @@ class MyHomePageState extends State<MyHomePage> {
 
   List<String> todaysEmotions = <String>[];
 
-//
-//                                                      // build widget for the State class UI
-//  Widget MoodWidget(){
-//    return Container(
-//
-//      child: _buildEmotionList(),
-//    );
-//  }
+
 
   Widget _buildEmotionList() // builds the ListView
   {
-    return new ListView.builder(itemBuilder: (BuildContext _context, int i) {
+    return new ListView.builder(
+        itemBuilder: (BuildContext _context, int i)
+        {
       if (i.isOdd) {
         return new Divider();
       }
@@ -480,16 +481,19 @@ class MyHomePageState extends State<MyHomePage> {
               : todaysEmotions.add(emotion);
         });
       },
-      trailing: new Checkbox(
-          value: emotionSelected,
-          onChanged: (bool newValue) {
-            setState(() {
-              newValue
-                  ? todaysEmotions.add(emotion)
-                  : todaysEmotions.remove(emotion);
-              emotionSelected = newValue;
-            });
-          }),
+      trailing: Padding(
+        padding: const EdgeInsets.only(right: 0.0),
+        child: new Checkbox(
+            value: emotionSelected,
+            onChanged: (bool newValue) {
+              setState(() {
+                newValue
+                    ? todaysEmotions.add(emotion)
+                    : todaysEmotions.remove(emotion);
+                emotionSelected = newValue;
+              });
+            }),
+      ),
     );
   }
 }
