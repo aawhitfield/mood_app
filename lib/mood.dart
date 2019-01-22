@@ -68,7 +68,7 @@ class MoodContainerState extends State<MoodContainer>                           
         });
       },
       trailing: Padding(
-        padding: const EdgeInsets.only(right: 0.0),
+        padding: const EdgeInsets.only(right: 40.0),
       child: new Checkbox(                                                      // adds a checkbox on the end of each tile to indicate to the user if the emotion is/isn't in the list
             value: emotionSelected,                                             // matches the checkbox with whether or not it is in the list
             onChanged: (bool newValue) {

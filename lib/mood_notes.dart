@@ -222,7 +222,7 @@ class MoodNotesDialogState extends State<MoodNotesDialog>
 
   @override                                                                     // also useless but I didn't know what other function I could run when Widget built
   void initState() {
-    //super.initState();
+    super.initState();
     print('initState');
     widget.onLoad(context);
   }
