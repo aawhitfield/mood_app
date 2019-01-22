@@ -11,7 +11,7 @@ Future<void> saveListOfObjectsToSharedPreferences(String key, List objects) asyn
     map = entry.toJson();
     _value += json.encode(map);
   });
-  print(_value);
+
 
   SharedPreferences _sp = await SharedPreferences.getInstance();
   _sp.setString(key, _value);
