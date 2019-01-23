@@ -15,7 +15,7 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="EmojiTrack+"
-        android:icon="@mipmap/icon1">
+        android:icon="@mipmap/plain">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

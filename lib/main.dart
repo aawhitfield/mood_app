@@ -63,6 +63,8 @@ class MyHomePage extends StatefulWidget {
 enum Answer { CANCEL, ADD } // enum for pop up
 
 class MyHomePageState extends State<MyHomePage> {                               // global variables
+  String appBarTitle = 'EmojiTracker+';
+  List<String> titles = ['Calendar', 'Mood', 'Meals', 'Meds'];
   int currentIndex = 1;
   int _calendarIndex = 0;
   List<Widget> tabs = <Widget>[]; // the navigation bar tabs at the bottom
@@ -74,6 +76,7 @@ class MyHomePageState extends State<MyHomePage> {                               
   final scaffoldKey = GlobalKey<ScaffoldState>();                              // sets a key to Scaffold so we can refer to it to call a Snackbar to alert users when entry has been added
   final String _journalKey = 'journalKey';
   final String mood = '';
+  bool colored = true;                                                          // sets the selected Meal icon to be colored or black/white
 
   List<String> emotions = <String>[
     'Happy',
@@ -127,7 +130,7 @@ class MyHomePageState extends State<MyHomePage> {                               
 
       CalendarView(entries: journal,),
       MoodContainer(this),
-      MealsWidget(Colors.white),
+      MealsWidget(this),
       MedsWidget(Colors.white),
     ];
 
@@ -139,7 +142,7 @@ class MyHomePageState extends State<MyHomePage> {                               
     void onTabTapped(int index) {                                               // switches navigation tabs when tapped
       setState(() {
         currentIndex = index;
-
+        appBarTitle = titles[index];
       });
     }
 
@@ -149,7 +152,7 @@ class MyHomePageState extends State<MyHomePage> {                               
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
 
-        title: Text(widget.title),
+        title: Text(appBarTitle),//Text(widget.title),
       ),
       body: tabs[currentIndex],
       key: scaffoldKey,
@@ -161,19 +164,19 @@ class MyHomePageState extends State<MyHomePage> {                               
 
           BottomNavigationBarItem(
             icon: new Icon(Icons.calendar_today),
-            title: new Text('Calendar'),
+            title: new Text(titles[0]),
           ),
           BottomNavigationBarItem(
             icon: new Icon(Icons.mood),
-            title: new Text('Mood'),
+            title: new Text(titles[1]),
           ),
           BottomNavigationBarItem(
             icon: new Icon(Icons.fastfood),
-            title: new Text('Meals'),
+            title: new Text(titles[2]),
           ),
           BottomNavigationBarItem(
             icon: new Icon(Icons.local_pharmacy),
-            title: new Text('Meds'),
+            title: new Text(titles[3]),
           ),
 
         ],
