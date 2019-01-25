@@ -1,1 +1,1 @@
-// Breakfast Icon made by Freepik from www.flaticon.com
+// Meal Icon made by Freepik from www.flaticon.com

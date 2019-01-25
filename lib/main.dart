@@ -1,3 +1,5 @@
+//TODO: Revamp UI to match Google Calendar and Google Classroom. Remove bottom tabs. Only Calendar view gets FAB. Add cancel/save buttons on new entries.
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'mood.dart';
@@ -67,6 +69,7 @@ class MyHomePageState extends State<MyHomePage> {                               
   List<String> titles = ['Calendar', 'Mood', 'Meals', 'Meds'];
   int currentIndex = 1;
   int _calendarIndex = 0;
+  int _mealsIndex = 2;                                                          // meals is the 3rd tab
   List<Widget> tabs = <Widget>[]; // the navigation bar tabs at the bottom
   String notesText = ''; // value of the notes section
   TextEditingController notesController = new TextEditingController();
@@ -185,7 +188,7 @@ class MyHomePageState extends State<MyHomePage> {                               
 
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(right: 0.0),
-        child: currentIndex == _calendarIndex ? null : FloatingActionButton(    // deactivates Floating Action Button on Calendar tab
+        child: (currentIndex == _calendarIndex || currentIndex == _mealsIndex) ? null : FloatingActionButton(    // deactivates Floating Action Button on Calendar tab
           onPressed: () {
             //
             onButtonPressed();
