@@ -2,6 +2,7 @@ import 'package:flutter/material.dart'; // all of the widgets needed for Flutter
 import 'main.dart'; // all of the language packages for Dart
 import 'mealClass.dart'; // access the enum and objects for the Meal Class
 import 'package:recase/recase.dart'; // able to change lowercase text -> title case for button labels
+import 'format_date_time.dart';
 
 class MealsWidget extends StatefulWidget {
   final MyHomePageState parent;
@@ -17,7 +18,7 @@ class MealsWidget extends StatefulWidget {
 
 class MealsWidgetState extends State<MealsWidget> {
   static Meal breakfast = new Meal(MealType.breakfast,
-      false); // creates objects of the 4 meals from the Meal Class
+      false);                                                                   // creates objects of the 4 meals from the Meal Class
   static Meal lunch = new Meal(MealType.lunch, false);
   static Meal dinner = new Meal(MealType.dinner, false);
   static Meal snack = new Meal(MealType.snack, false);
@@ -26,31 +27,60 @@ class MealsWidgetState extends State<MealsWidget> {
     lunch,
     dinner,
     snack
-  ]; // creates list of meals to iterate over to make the layout
+  ];                                                                            // creates list of meals to iterate over to make the layout
+  DateTime _date = new DateTime.now();                                          // sets default date to today for date picker
+  TimeOfDay _time = new TimeOfDay.now();                                        // sets default time to current time for time picker TODO: implement time picker
+  String _dateString = '';
+
+  String get dateString => _dateString;
+
+  set dateString(String dateString) {
+    _dateString = dateString;
+  }                                      // Initial date for the label of the date picker. Defaults to today.
+
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: _date,
+        firstDate: new DateTime(_date.year, _date.month - 1),                   // users can record meals one month in the past
+        lastDate: new DateTime(_date.year,_date.month,_date.day+1),             // users cannot record meals in the future
+    );
+
+    if(picked != null && picked != _date)
+      {
+        setState(() {
+          _date = picked;                                                       // changes the displayed date from today to the one the user selected from the DatePicker
+          String _dayOfWeek = abbreviatedWeekday(_date);
+          String _month = abbreviatedMonth(_date);
+          dateString = _dayOfWeek + ', ' + _month + ' ${_date.day}, ${_date.year}';
+        });
+      }
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      // the main layout of the page going down in a column
-      mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    String _dayOfWeek = abbreviatedWeekday(_date);                              // sets the text on the Time tile to be today's date by default. Users can click it to bring up the DatePicker to change the date.
+    String _month = abbreviatedMonth(_date);
+    dateString = _dayOfWeek + ', ' + _month + ' ${_date.day}, ${_date.year}';
+
+    return ListView(
+      shrinkWrap: true,
       children: <Widget>[
+        // the main layout of the page going down in a column
         Container(
           color: Colors.grey[300],
           child: ButtonBar(
             mainAxisSize: MainAxisSize.max,
-            alignment: MainAxisAlignment.spaceEvenly,
+            alignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               FlatButton(
-                child: Text(
-                    'CANCEL',
-                    style: TextStyle(color: Theme.of(context).primaryColor),
-                ),
+                child: Icon(Icons.clear),
               ),
               FlatButton(
                 child: Text(
-                    'SAVE',
-                    style: TextStyle(color: Theme.of(context).primaryColor),
+                  'SAVE',
+                  style: TextStyle(color: Theme.of(context).primaryColor),
                 ),
               )
             ],
@@ -60,6 +90,7 @@ class MealsWidgetState extends State<MealsWidget> {
           title: Text('Meal Type'),
           leading: Icon(Icons.local_dining),
         ),
+
         GridView.count(
           // creates a aesthetic grid of icon buttons to click on to toggle which meal to record
           crossAxisCount: 4,
@@ -120,7 +151,8 @@ class MealsWidgetState extends State<MealsWidget> {
             Icons.access_time,
             color: Colors.white,
           ),
-          title: Text('Thurs, Jan 24, 2019'),
+          title: Text(dateString),
+          onTap: (){_selectDate(context);},
           trailing: Text('9:37 PM'),
         ),
 
@@ -128,7 +160,11 @@ class MealsWidgetState extends State<MealsWidget> {
         // Allows user to add notes
         ListTile(
           leading: Icon(Icons.subject),
-          title: Text('Add note'),
+          title: TextField(
+            maxLines: null,
+            keyboardType: TextInputType.multiline,
+            decoration: InputDecoration(hintText: 'Add note'),
+          ),
         ),
       ],
     );

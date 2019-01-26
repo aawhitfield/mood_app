@@ -1,5 +1,86 @@
 import 'package:flutter/material.dart';
 
+String abbreviatedWeekday(DateTime dateTime)                                    // takes a DateTime and parses out the Day of the week and returns it in abbreviated form as a String
+{
+  String dayOfWeek = '';
+
+  // set Day of Week
+  switch (dateTime.weekday) {
+    case 1:
+      dayOfWeek = "Mon";
+      break;
+    case 2:
+      dayOfWeek = "Tues";
+      break;
+    case 3:
+      dayOfWeek = "Wed";
+      break;
+    case 4:
+      dayOfWeek = "Thurs";
+      break;
+    case 5:
+      dayOfWeek = "Fri";
+      break;
+    case 6:
+      dayOfWeek = "Sat";
+      break;
+    case 7:
+      dayOfWeek = "Sun";
+      break;
+  }
+
+  return dayOfWeek;
+}
+
+
+String abbreviatedMonth(DateTime dateTime)
+{
+  String month = '';
+
+  switch (dateTime.month) {
+    case 1:
+      month = "Jan";
+      break;
+    case 2:
+      month = "Feb";
+      break;
+    case 3:
+      month = "Mar";
+      break;
+    case 4:
+      month = "Apr";
+      break;
+    case 5:
+      month = "May";
+      break;
+    case 6:
+      month = "June";
+      break;
+    case 7:
+      month = "July";
+      break;
+    case 8:
+      month = "Aug";
+      break;
+    case 9:
+      month = "Sept";
+      break;
+    case 10:
+      month = "Oct";
+      break;
+    case 11:
+      month = "Nov";
+      break;
+    case 12:
+      month = "Dec";
+      break;
+  }
+  return month;
+}
+
+
+
+
 String formatDateTime(DateTime dateTime)
 {
 
