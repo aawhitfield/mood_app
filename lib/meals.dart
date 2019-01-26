@@ -30,7 +30,8 @@ class MealsWidgetState extends State<MealsWidget> {
   ];                                                                            // creates list of meals to iterate over to make the layout
   DateTime _date = new DateTime.now();                                          // sets default date to today for date picker
   TimeOfDay _time = new TimeOfDay.now();                                        // sets default time to current time for time picker TODO: implement time picker
-  String _dateString = '';
+  String _dateString = '';                                                      // the string to use to display to the user the desired date for the meal record
+  String _timeString = '';                                                      // the String to use to display to the user the desired time for the meal record
 
   String get dateString => _dateString;
 
@@ -58,11 +59,29 @@ class MealsWidgetState extends State<MealsWidget> {
   }
 
 
+  Future<Null> _selectTime(BuildContext context) async {
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: _time);
+
+    if(picked != null && picked != _time)
+    {
+      setState(() {
+        _time = picked;                                                       // changes the displayed date from today to the one the user selected from the DatePicker
+        _timeString = formatHour(_time.hour) + ':' + formatMinutes(_time.minute) + ' ' + formatAMPM(_time.hour);             // formats time to user friendly format
+
+      });
+    }
+}
+
+
   @override
   Widget build(BuildContext context) {
     String _dayOfWeek = abbreviatedWeekday(_date);                              // sets the text on the Time tile to be today's date by default. Users can click it to bring up the DatePicker to change the date.
     String _month = abbreviatedMonth(_date);
     dateString = _dayOfWeek + ', ' + _month + ' ${_date.day}, ${_date.year}';
+    _timeString = formatHour(_time.hour) + ':' + formatMinutes(_time.minute) + ' ' + formatAMPM(_time.hour);
+
 
     return ListView(
       shrinkWrap: true,
@@ -153,7 +172,12 @@ class MealsWidgetState extends State<MealsWidget> {
           ),
           title: Text(dateString),
           onTap: (){_selectDate(context);},
-          trailing: Text('9:37 PM'),
+          trailing: GestureDetector(
+            onTap: (){
+              _selectTime(context);
+            },
+            child: Text(_timeString),
+          ),
         ),
 
         Divider(),

@@ -79,6 +79,37 @@ String abbreviatedMonth(DateTime dateTime)
 }
 
 
+String formatAMPM(int hour)
+{
+  String amOrPm = '';
+  hour >= 12 ? amOrPm = 'PM' : amOrPm = 'AM';
+
+  return amOrPm;
+}
+
+String formatHour(int hour)
+{
+  String _hourString = '';
+
+  if (hour == 0) {
+    hour = 12;
+  }
+  else if (hour > 12) {
+    hour -= 12;
+  }
+  (hour < 10) ? _hourString = '0$hour' : _hourString = hour.toString();
+
+  return _hourString;
+
+}
+
+String formatMinutes(int minutes){
+  // sets minutes formatted with leading zero as needed
+  String minuteString = '';
+  (minutes < 10) ? minuteString = '0$minutes' : minuteString = minutes.toString();
+
+  return minuteString;
+}
 
 
 String formatDateTime(DateTime dateTime)
