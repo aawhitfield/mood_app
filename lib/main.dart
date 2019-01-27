@@ -12,6 +12,7 @@ import 'save.dart';
 import 'dart:convert';
 import 'retrieve.dart';
 import 'drawer.dart';
+import 'package:flutter/animation.dart';
 
 void main() => runApp(MyApp());
 
@@ -64,24 +65,25 @@ class MyHomePage extends StatefulWidget {
 
 enum Answer { CANCEL, ADD } // enum for pop up
 
-class MyHomePageState extends State<MyHomePage> {                               // global variables
-  String appBarTitle = 'EmojiTracker+';
-  List<String> titles = ['Calendar', 'Mood', 'Meals', 'Meds'];
-  int currentIndex = 1;
-  int _calendarIndex = 0;
+class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{  // with Ticker for animated floating action button
+                                                                                // global variables
+  String appBarTitle = 'EmojiTracker+';                                         // title of the App on its home screen
+  List<String> titles = ['Calendar', 'Mood', 'Meals', 'Meds'];                  // names of the 4 tabs at the bottom of the navigation bar
+  int currentIndex = 1;                                                         // sets the default tab to Mood
+  int _calendarIndex = 0;                                                       // sets a user friendly way to refer to the calendar in the tabs List
   int _mealsIndex = 2;                                                          // meals is the 3rd tab
-  List<Widget> tabs = <Widget>[]; // the navigation bar tabs at the bottom
-  String notesText = ''; // value of the notes section
-  TextEditingController notesController = new TextEditingController();
-  DateTime now;
-  Entry newEntry;
-  List<Entry> journal = <Entry>[];
-  final scaffoldKey = GlobalKey<ScaffoldState>();                              // sets a key to Scaffold so we can refer to it to call a Snackbar to alert users when entry has been added
-  final String _journalKey = 'journalKey';
-  final String mood = '';
+  List<Widget> tabs = <Widget>[];                                               // the navigation bar tabs at the bottom
+  String notesText = '';                                                        // value of the notes section
+  TextEditingController notesController = new TextEditingController();          // Text controller to handle the Notes TextView in the add mood entry mode
+  DateTime now;                                                                 // the current DateTime reported from the OS
+  Entry newEntry;                                                               // new entry to the journal to be displayed in Calendar mode
+  List<Entry> journal = <Entry>[];                                              // the list of all journal entries
+  final scaffoldKey = GlobalKey<ScaffoldState>();                               // sets a key to Scaffold so we can refer to it to call a Snackbar to alert users when entry has been added
+  final String _journalKey = 'journalKey';                                      // the global key to the journal so it can be saved and restored to/from Shared Preferences
+  final String mood = '';                                                       // variable to store all of the moods a user selects
   bool colored = true;                                                          // sets the selected Meal icon to be colored or black/white
 
-  List<String> emotions = <String>[
+  List<String> emotions = <String>[                                             // the list of emotions that will be displayed to the user to select how they or someone is feeling today
     'Happy',
     'Angry',
     'Sad',
@@ -93,7 +95,7 @@ class MyHomePageState extends State<MyHomePage> {                               
     'Robotic',
     'Calm',
   ];
-  List<String> todaysEmotions = <String>[];
+  List<String> todaysEmotions = <String>[];                                     // the list of all emotions the user selects in a single entry
 
 
 
@@ -200,12 +202,9 @@ class MyHomePageState extends State<MyHomePage> {                               
     );
   }
 
-  //****************
 
-  //******************
 
-  void onAddPressed(
-      String text) // runs when user presses ADD on the notes popup
+  void onAddPressed(String text)                                                              // runs when user presses ADD on the notes popup
   {
     //
     setState(() {
@@ -219,13 +218,6 @@ class MyHomePageState extends State<MyHomePage> {                               
       notesController.clear();
     });
   }
-
-  //***************************
-
-/////////////////////////////////////////////////////////////////////
-  //                         MOOD
-
-
 
 
 
