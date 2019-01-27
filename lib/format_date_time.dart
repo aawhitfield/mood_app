@@ -1,4 +1,35 @@
-import 'package:flutter/material.dart';
+// A series of functions that work with DateTime objects and parses/formats them into user friendly Strings
+
+String dayOfWeek(DateTime dateTime) {
+                                                                                // takes a DateTime objects and returns a String containing the fully spelled out day of week. For an abbreviated String use abbreviatedWeekday
+  String _dayOfWeek = '';
+
+  switch (dateTime.weekday) {
+    case 1:
+      _dayOfWeek = "Monday";
+      break;
+    case 2:
+      _dayOfWeek = "Tuesday";
+      break;
+    case 3:
+      _dayOfWeek = "Wednesday";
+      break;
+    case 4:
+      _dayOfWeek = "Thursday";
+      break;
+    case 5:
+      _dayOfWeek = "Friday";
+      break;
+    case 6:
+      _dayOfWeek = "Saturday";
+      break;
+    case 7:
+      _dayOfWeek = "Sunday";
+      break;
+  }
+
+  return _dayOfWeek;
+}
 
 String abbreviatedWeekday(DateTime dateTime)                                    // takes a DateTime and parses out the Day of the week and returns it in abbreviated form as a String
 {
@@ -32,54 +63,99 @@ String abbreviatedWeekday(DateTime dateTime)                                    
   return dayOfWeek;
 }
 
-
-String abbreviatedMonth(DateTime dateTime)
-{
-  String month = '';
+String fullMonth(DateTime dateTime) {                                           // takes a DateTime object and returns a String with a month in full
+  // Set month
+  String _month = '';
 
   switch (dateTime.month) {
     case 1:
-      month = "Jan";
+      _month = "January";
       break;
     case 2:
-      month = "Feb";
+      _month = "February";
       break;
     case 3:
-      month = "Mar";
+      _month = "March";
       break;
     case 4:
-      month = "Apr";
+      _month = "April";
       break;
     case 5:
-      month = "May";
+      _month = "May";
       break;
     case 6:
-      month = "June";
+      _month = "June";
       break;
     case 7:
-      month = "July";
+      _month = "July";
       break;
     case 8:
-      month = "Aug";
+      _month = "August";
       break;
     case 9:
-      month = "Sept";
+      _month = "September";
       break;
     case 10:
-      month = "Oct";
+      _month = "October";
       break;
     case 11:
-      month = "Nov";
+      _month = "November";
       break;
     case 12:
-      month = "Dec";
+      _month = "December";
       break;
   }
-  return month;
+
+  return _month;
+}
+
+String abbreviatedMonth(DateTime dateTime)                                      // takes a DateTime object and returns a String with an abbreviated month
+{
+  String _month = '';
+
+  switch (dateTime.month) {
+    case 1:
+      _month = "Jan";
+      break;
+    case 2:
+      _month = "Feb";
+      break;
+    case 3:
+      _month = "Mar";
+      break;
+    case 4:
+      _month = "Apr";
+      break;
+    case 5:
+      _month = "May";
+      break;
+    case 6:
+      _month = "June";
+      break;
+    case 7:
+      _month = "July";
+      break;
+    case 8:
+      _month = "Aug";
+      break;
+    case 9:
+      _month = "Sept";
+      break;
+    case 10:
+      _month = "Oct";
+      break;
+    case 11:
+      _month = "Nov";
+      break;
+    case 12:
+      _month = "Dec";
+      break;
+  }
+  return _month;
 }
 
 
-String formatAMPM(int hour)
+String formatAMPM(int hour)                                                     // takes an integer representing an hour of the day in 24H time and returns a String with the correct AM/PM value
 {
   String amOrPm = '';
   hour >= 12 ? amOrPm = 'PM' : amOrPm = 'AM';
@@ -87,7 +163,7 @@ String formatAMPM(int hour)
   return amOrPm;
 }
 
-String formatHour(int hour)
+String formatHour(int hour)                                                     // takes an integer representing an hour of the day in 24H time and returns a String correctly formatted of a 1 or 2 digit String in 12H time
 {
   String _hourString = '';
 
@@ -97,13 +173,13 @@ String formatHour(int hour)
   else if (hour > 12) {
     hour -= 12;
   }
-  (hour < 10) ? _hourString = '0$hour' : _hourString = hour.toString();
+  _hourString = hour.toString();
 
   return _hourString;
 
 }
 
-String formatMinutes(int minutes){
+String formatMinutes(int minutes){                                              // takes an integer representing the number of minutes in time and returns a 1 or 2 digit String representing that time.
   // sets minutes formatted with leading zero as needed
   String minuteString = '';
   (minutes < 10) ? minuteString = '0$minutes' : minuteString = minutes.toString();
@@ -112,101 +188,12 @@ String formatMinutes(int minutes){
 }
 
 
-String formatDateTime(DateTime dateTime)
+String formatDateTime(DateTime dateTime)                                        // takes a DateTime object and formats it into user friendly format of DayOfWeek, Month, Day, Year ~ HH:MM AM/PM
 {
 
   String formattedDateTime = '';
-  String dayOfWeek = '';
-  String month = '';
-  int hour = dateTime.hour;
-  String amPM = '';
-  String minutes = dateTime.minute.toString();
-
-  // set Day of Week
-  switch (dateTime.weekday) {
-    case 1:
-      dayOfWeek = "Monday";
-      break;
-    case 2:
-      dayOfWeek = "Tuesday";
-      break;
-    case 3:
-      dayOfWeek = "Wednesday";
-      break;
-    case 4:
-      dayOfWeek = "Thursday";
-      break;
-    case 5:
-      dayOfWeek = "Friday";
-      break;
-    case 6:
-      dayOfWeek = "Saturday";
-      break;
-    case 7:
-      dayOfWeek = "Sunday";
-      break;
-  }
-
-  // Set month
-  switch (dateTime.month) {
-    case 1:
-      month = "January";
-      break;
-    case 2:
-      month = "February";
-      break;
-    case 3:
-      month = "March";
-      break;
-    case 4:
-      month = "April";
-      break;
-    case 5:
-      month = "May";
-      break;
-    case 6:
-      month = "June";
-      break;
-    case 7:
-      month = "July";
-      break;
-    case 8:
-      month = "August";
-      break;
-    case 9:
-      month = "September";
-      break;
-    case 10:
-      month = "October";
-      break;
-    case 11:
-      month = "November";
-      break;
-    case 12:
-      month = "December";
-      break;
-  }
-
-  // set AM or PM
-  if (hour < 12) {
-    amPM = 'AM';
-  } else {
-    amPM = 'PM';
-  }
-
-  // sets 12 hour time
-  if (hour == 0) {
-    hour = 12;
-  } else if (hour > 12) {
-    hour -= 12;
-  }
-
-  // sets minutes formatted with leading zero as needed
-  if (dateTime.minute < 10) {
-    minutes = '0${dateTime.minute}';
-  }
-
-  formattedDateTime = '$dayOfWeek, $month ${dateTime.day}, ${dateTime.year} ~ $hour:$minutes $amPM';
+  
+  formattedDateTime = dayOfWeek(dateTime) + ', ' + fullMonth(dateTime) + ' ${dateTime.day}, ${dateTime.year} ~ ' + formatHour(dateTime.hour) + ':' + formatMinutes(dateTime.minute) + ' ' + formatAMPM(dateTime.hour);
 
   return formattedDateTime;
 }
