@@ -83,114 +83,126 @@ class MealsWidgetState extends State<MealsWidget> {
     _timeString = formatHour(_time.hour) + ':' + formatMinutes(_time.minute) + ' ' + formatAMPM(_time.hour);
 
 
-    return ListView(
-      shrinkWrap: true,
-      children: <Widget>[
-        // the main layout of the page going down in a column
-        Container(
-          color: Colors.grey[300],
-          child: ButtonBar(
-            mainAxisSize: MainAxisSize.max,
-            alignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              FlatButton(
-                child: Icon(Icons.clear),
-              ),
-              FlatButton(
-                child: Text(
-                  'SAVE',
-                  style: TextStyle(color: Theme.of(context).primaryColor),
-                ),
-              )
-            ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add Meal Entry'),
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(
+                  Icons.add,
+              color: Colors.white),
+              onPressed: null)
+        ],
+      ),
+      body: ListView(
+        shrinkWrap: true,
+        children: <Widget>[
+          // the main layout of the page going down in a column
+//          Container(
+//            color: Colors.grey[300],
+//            child: ButtonBar(
+//              mainAxisSize: MainAxisSize.max,
+//              alignment: MainAxisAlignment.spaceBetween,
+//              children: <Widget>[
+//                FlatButton(
+//                  child: Icon(Icons.clear),
+//                ),
+//                FlatButton(
+//                  child: Text(
+//                    'SAVE',
+//                    style: TextStyle(color: Theme.of(context).primaryColor),
+//                  ),
+//                )
+//              ],
+//            ),
+//          ),
+          ListTile(
+            title: Text('Meal Type'),
+            leading: Icon(Icons.local_dining),
           ),
-        ),
-        ListTile(
-          title: Text('Meal Type'),
-          leading: Icon(Icons.local_dining),
-        ),
 
-        GridView.count(
-          // creates a aesthetic grid of icon buttons to click on to toggle which meal to record
-          crossAxisCount: 4,
-          shrinkWrap: true,
-          children: List.generate(mealList.length, (index) {
-            // generates a flat button for each meal in the meal list
-            return Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: FlatButton(
-                shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(64.0)),
-                // makes the InkWell ripples more circular to match the circular icon
-                onPressed: () {
-                  setState(() {
-                    mealList.forEach((meal) {
-                      // ensures that only one meal is selected. The one that is tapped gets selected and the others are deactivated
-                      meal.mealType == mealList[index].mealType
-                          ? meal.state = true
-                          : meal.state = false;
+          GridView.count(
+            // creates a aesthetic grid of icon buttons to click on to toggle which meal to record
+            crossAxisCount: 4,
+            shrinkWrap: true,
+            children: List.generate(mealList.length, (index) {
+              // generates a flat button for each meal in the meal list
+              return Padding(
+                padding: const EdgeInsets.all(0.0),
+                child: FlatButton(
+                  shape: new RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(64.0)),
+                  // makes the InkWell ripples more circular to match the circular icon
+                  onPressed: () {
+                    setState(() {
+                      mealList.forEach((meal) {
+                        // ensures that only one meal is selected. The one that is tapped gets selected and the others are deactivated
+                        meal.mealType == mealList[index].mealType
+                            ? meal.state = true
+                            : meal.state = false;
+                      });
                     });
-                  });
-                },
-                child: Column(
-                  children: <Widget>[
-                    Image(
-                      image: mealList[index]
-                              .state // activates colored image if its state property is toggled true, black&white if false
-                          ? AssetImage(
-                              'graphics/${mealList[index].toString()}_colored.png')
-                          : AssetImage(
-                              'graphics/${mealList[index].toString()}_bw.png'),
-                      width: 64.0,
-                      height: 64.0,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                          '${ReCase(mealList[index].toString()).titleCase}'), // uses ReCase to convert from lowercase -> titleCase for formatting
-                    ),
-                  ],
+                  },
+                  child: Column(
+                    children: <Widget>[
+                      Image(
+                        image: mealList[index]
+                                .state // activates colored image if its state property is toggled true, black&white if false
+                            ? AssetImage(
+                                'graphics/${mealList[index].toString()}_colored.png')
+                            : AssetImage(
+                                'graphics/${mealList[index].toString()}_bw.png'),
+                        width: 64.0,
+                        height: 64.0,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                            '${ReCase(mealList[index].toString()).titleCase}'), // uses ReCase to convert from lowercase -> titleCase for formatting
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }),
-        ),
+              );
+            }),
+          ),
 
-        Divider(),
-        // Controls the date and time picker. Defaults to now. Can be changed with a tap.
-        ListTile(
-          leading: Icon(Icons.access_time),
-          title: Text(
-            'Time',
-            style: Theme.of(context).textTheme.subhead,
+          Divider(),
+          // Controls the date and time picker. Defaults to now. Can be changed with a tap.
+          ListTile(
+            leading: Icon(Icons.access_time),
+            title: Text(
+              'Time',
+              style: Theme.of(context).textTheme.subhead,
+            ),
           ),
-        ),
-        ListTile(
-          leading: Icon(
-            Icons.access_time,
-            color: Colors.white,
+          ListTile(
+            leading: Icon(
+              Icons.access_time,
+              color: Colors.white,
+            ),
+            title: Text(dateString),
+            onTap: (){_selectDate(context);},
+            trailing: GestureDetector(
+              onTap: (){
+                _selectTime(context);
+              },
+              child: Text(_timeString),
+            ),
           ),
-          title: Text(dateString),
-          onTap: (){_selectDate(context);},
-          trailing: GestureDetector(
-            onTap: (){
-              _selectTime(context);
-            },
-            child: Text(_timeString),
-          ),
-        ),
 
-        Divider(),
-        // Allows user to add notes
-        ListTile(
-          leading: Icon(Icons.subject),
-          title: TextField(
-            maxLines: null,
-            keyboardType: TextInputType.multiline,
-            decoration: InputDecoration(hintText: 'Add note'),
+          Divider(),
+          // Allows user to add notes
+          ListTile(
+            leading: Icon(Icons.subject),
+            title: TextField(
+              maxLines: null,
+              keyboardType: TextInputType.multiline,
+              decoration: InputDecoration(hintText: 'Add note'),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

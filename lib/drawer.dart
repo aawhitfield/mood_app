@@ -46,9 +46,6 @@ class UserDrawerState extends State<UserDrawer>
             title: Text('Calendar View'),
             onTap: () {
               Navigator.of(context).pop();
-                widget.parent.setState(() {
-                  widget.parent.currentIndex = 0;
-              });
             },
           ),
           new ListTile(

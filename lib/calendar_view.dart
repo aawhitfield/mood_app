@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'entry.dart';
 import 'format_date_time.dart';
 // TODO: Show only the Calendar for a given month with a view to select previous/next month
+// TODO: Annotate the code for CalendarView
 class CalendarView extends StatefulWidget {
 
   final List<Entry> entries;
@@ -24,9 +25,7 @@ class CalendarViewState extends State<CalendarView> {
   Widget build(BuildContext context)
   {
     return new Scaffold(
-//      appBar: new AppBar(
-//        title: Text('Calendar View'),
-//      ),
+
       body: _buildCalendarList(),
     );
   }
