@@ -26,6 +26,12 @@ class MoodContainerState
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Mood Entry'),
+        leading: GestureDetector(                                               // cancel X button to close if user wants to abort adding an entry
+          child: Icon(Icons.clear),
+          onTap: (){
+            Navigator.pop(context);
+          },
+        ),
         actions: <Widget>[
           IconButton(
               icon: Icon(

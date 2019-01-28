@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'entry.dart';
 import 'format_date_time.dart';
 // TODO: Show only the Calendar for a given month with a view to select previous/next month
-// TODO: Annotate the code for CalendarView
 class CalendarView extends StatefulWidget {
 
-  final List<Entry> entries;
+  final List<Entry> entries;                                                    // a List of each of the entries the user has saved
 
 
-  const CalendarView({Key key, this.entries}) : super(key: key);
+  const CalendarView({Key key, this.entries}) : super(key: key);                // constructor that initializes the parameter entries
 
   @override
   CalendarViewState createState() {
@@ -17,7 +16,7 @@ class CalendarView extends StatefulWidget {
   }
 }
 
-class CalendarViewState extends State<CalendarView> {
+class CalendarViewState extends State<CalendarView> {                           // a stateful widget
 
 
 
@@ -37,7 +36,7 @@ class CalendarViewState extends State<CalendarView> {
           shrinkWrap: true,
           itemBuilder: (BuildContext context, int i)
             {
-              if(i.isOdd)
+              if(i.isOdd)                                                       // puts a divider between each entry
               {
               return new Divider();
             }
@@ -53,7 +52,7 @@ class CalendarViewState extends State<CalendarView> {
   {
 
     String formattedEmotionString = '';
-    for (int i = 0; i < entry.emotionList.length; i++)
+    for (int i = 0; i < entry.emotionList.length; i++)              // formats when more than one emotion was selected for a given entry
       {
           if (i >= 1)
             {
@@ -68,7 +67,7 @@ class CalendarViewState extends State<CalendarView> {
               child: Column(
                 children: <Widget>[
                   Image(
-                    image: AssetImage('graphics/${entry.emotionList[0]}.png'.toLowerCase()),
+                    image: AssetImage('graphics/${entry.emotionList[0]}.png'.toLowerCase()),        // if an entry has more than one category (emotion) then the first one selected will be the default image
                     height: 32.0,
                     ),
                   Text(
@@ -79,7 +78,7 @@ class CalendarViewState extends State<CalendarView> {
               ),
             ),
             title: Text(entry.eventNotes),
-            subtitle: Text('Mood: ' + formatDateTime(entry.eventTime)),
+            subtitle: Text('Mood: ' + formatAbbreviatedDayWeekDateTime(entry.eventTime)),
           );
   }
 }

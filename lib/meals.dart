@@ -29,9 +29,11 @@ class MealsWidgetState extends State<MealsWidget> {
     snack
   ];                                                                            // creates list of meals to iterate over to make the layout
   DateTime _date = new DateTime.now();                                          // sets default date to today for date picker
-  TimeOfDay _time = new TimeOfDay.now();                                        // sets default time to current time for time picker TODO: implement time picker
+  TimeOfDay _time = new TimeOfDay.now();                                        // sets default time to current time for time picker
   String _dateString = '';                                                      // the string to use to display to the user the desired date for the meal record
   String _timeString = '';                                                      // the String to use to display to the user the desired time for the meal record
+
+  TextEditingController notesController = new TextEditingController();          // controller to process text of notes field
 
   String get dateString => _dateString;
 
@@ -86,6 +88,12 @@ class MealsWidgetState extends State<MealsWidget> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Meal Entry'),
+        leading: GestureDetector(
+            child: Icon(Icons.clear),
+            onTap: (){
+              Navigator.pop(context);
+            },
+        ),
         actions: <Widget>[
           IconButton(
               icon: Icon(
@@ -97,25 +105,6 @@ class MealsWidgetState extends State<MealsWidget> {
       body: ListView(
         shrinkWrap: true,
         children: <Widget>[
-          // the main layout of the page going down in a column
-//          Container(
-//            color: Colors.grey[300],
-//            child: ButtonBar(
-//              mainAxisSize: MainAxisSize.max,
-//              alignment: MainAxisAlignment.spaceBetween,
-//              children: <Widget>[
-//                FlatButton(
-//                  child: Icon(Icons.clear),
-//                ),
-//                FlatButton(
-//                  child: Text(
-//                    'SAVE',
-//                    style: TextStyle(color: Theme.of(context).primaryColor),
-//                  ),
-//                )
-//              ],
-//            ),
-//          ),
           ListTile(
             title: Text('Meal Type'),
             leading: Icon(Icons.local_dining),
@@ -198,6 +187,9 @@ class MealsWidgetState extends State<MealsWidget> {
             title: TextField(
               maxLines: null,
               keyboardType: TextInputType.multiline,
+              textCapitalization: TextCapitalization.sentences,
+              controller: notesController,
+              textInputAction: TextInputAction.done,
               decoration: InputDecoration(hintText: 'Add note'),
             ),
           ),

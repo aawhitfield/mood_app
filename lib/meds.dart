@@ -12,6 +12,12 @@ class MedsWidget extends StatelessWidget {
         title: Text(
           'Add New Med Entry',
         ),
+        leading: GestureDetector(
+          child: Icon(Icons.clear),
+          onTap: (){
+            Navigator.pop(context);
+          },
+        ),
         actions: <Widget>[
           IconButton(
               icon: Icon(

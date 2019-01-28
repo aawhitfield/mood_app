@@ -1,5 +1,3 @@
-//TODO: Revamp UI to match Google Calendar and Google Classroom. Remove bottom tabs. Only Calendar view gets FAB. Add cancel/save buttons on new entries.
-
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'mood_notes.dart';
@@ -12,6 +10,8 @@ import 'drawer.dart';
 import 'package:flutter/animation.dart';
 import 'animated_floating_action_button.dart';
 import 'menu/menu.dart';
+import 'menu/settings.dart';
+import 'menu/credits.dart';
 
 void main() => runApp(MyApp());
 
@@ -70,10 +70,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     'Meals',
     'Meds'
   ]; // names of the 4 tabs at the bottom of the navigation bar
-//  int currentIndex = 1;                                                         // sets the default tab to Mood
-//  int _calendarIndex = 0;                                                       // sets a user friendly way to refer to the calendar in the tabs List
-//  int _mealsIndex = 2;                                                          // meals is the 3rd tab
-//  List<Widget> tabs = <Widget>[];                                               // the navigation bar tabs at the bottom
+
   String notesText = ''; // value of the notes section
   TextEditingController notesController =
       new TextEditingController(); // Text controller to handle the Notes TextView in the add mood entry mode
@@ -115,7 +112,27 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       <String>[];                                                               // the list of all emotions the user selects in a single entry
 
   void choiceAction(String choice){
-    print('Working');
+    switch(choice){
+      case 'Settings'
+          : Navigator.push(
+                context,
+                new MaterialPageRoute(
+                    builder: (BuildContext context) => SettingsPage(),
+                ),
+            );
+            break;
+      case 'Credits'
+          : Navigator.push(
+                context,
+                new MaterialPageRoute(
+                    builder: (BuildContext context) => CreditsPage(),
+                ),
+            );
+            break;
+      default
+          : print('Unknown');
+          break;
+    }
   }
 
   @override
@@ -144,8 +161,10 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         Entry entry = new Entry.fromJson(
             map); // creates Entry objects with contents of Map
 
-        journal.add(
-            entry); // adds the Entry to journal List to complete the restore.
+        setState((){
+          journal.add(
+              entry);
+        }); // adds the Entry to journal List to complete the restore.
       });
     });
 
@@ -199,14 +218,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    /*tabs = [
-                                                                                // creates the 4 tabs source codes at the bottom of the screen
 
-      CalendarView(entries: journal,),
-      MoodContainer(this),
-      MealsWidget(this),
-      MedsWidget(Colors.white),
-    ];*/
 
 
 

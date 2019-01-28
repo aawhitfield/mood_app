@@ -187,6 +187,16 @@ String formatMinutes(int minutes){                                              
   return minuteString;
 }
 
+String formatAbbreviatedDayWeekDateTime(DateTime dateTime)                                        // takes a DateTime object and formats it into user friendly format of DayOfWeek, Month, Day, Year ~ HH:MM AM/PM
+{
+
+  String formattedDateTime = '';
+
+  formattedDateTime = abbreviatedWeekday(dateTime) + ', ' + fullMonth(dateTime) + ' ${dateTime.day}, ${dateTime.year} ~ ' + formatHour(dateTime.hour) + ':' + formatMinutes(dateTime.minute) + ' ' + formatAMPM(dateTime.hour);
+
+  return formattedDateTime;
+}
+
 
 String formatDateTime(DateTime dateTime)                                        // takes a DateTime object and formats it into user friendly format of DayOfWeek, Month, Day, Year ~ HH:MM AM/PM
 {

@@ -37,7 +37,8 @@ class AnimatedFloatingActionButtonState
                         style: new TextStyle(
                           fontSize: 13.0,
                           fontFamily: 'Roboto',
-                          color: new Color(0xFF9E9E9E),
+                          color: new Color(0xFFE57373),
+                          background: Paint()..color = Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -47,7 +48,7 @@ class AnimatedFloatingActionButtonState
                     scale: widget.parent.animation3,
                     alignment: FractionalOffset.center,
                     child: new Material(
-                        color: new Color(0xFF9E9E9E),
+                        color: new Color(0xFFE57373),
                         type: MaterialType.circle,
                         elevation: 6.0,
                         child: new GestureDetector(
@@ -92,7 +93,8 @@ class AnimatedFloatingActionButtonState
                         style: new TextStyle(
                           fontSize: 13.0,
                           fontFamily: 'Roboto',
-                          color: new Color(0xFF9E9E9E),
+                          color: new Color(0xFFE57373),
+                          background: Paint()..color = Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -102,7 +104,7 @@ class AnimatedFloatingActionButtonState
                     scale: widget.parent.animation2,
                     alignment: FractionalOffset.center,
                     child: new Material(
-                        color: new Color(0xFF00BFA5),
+                        color: new Color(0xFFE57373),
                         type: MaterialType.circle,
                         elevation: 6.0,
                         child: new GestureDetector(
@@ -150,7 +152,8 @@ class AnimatedFloatingActionButtonState
                         style: new TextStyle(
                           fontSize: 13.0,
                           fontFamily: 'Roboto',
-                          color: new Color(0xFF9E9E9E),
+                          color: new Color(0xFFE57373),
+                          background: Paint()..color = Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
