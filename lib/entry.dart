@@ -27,7 +27,7 @@ class Entry
     eventTime = DateTime.parse(entry['eventTime']);                             // uses built in DateTime parser for String -> DateTime
     eventNotes = entry['eventNotes'];
     emotionList =  _toListString(entry['emotionList']);
-    entryType = entry['entryType'];
+    entryType = entryTypeStringToJSON(entry['entryType']);
 
 
   }
@@ -41,6 +41,20 @@ class Entry
         'entryType': typeAsString(entryType),
       };
 
+  EntryType entryTypeStringToJSON(String typeString){
+
+    EntryType entryType;
+
+    switch(typeString){
+      case 'Mood' : entryType = EntryType.meal;
+                    break;
+      case 'Meal' : entryType = EntryType.meal;
+                    break;
+      case 'Med' : entryType = EntryType.med;
+                    break;
+    }
+    return entryType;
+  }
 
   String typeAsString(EntryType entryType){
     String typeString = '';

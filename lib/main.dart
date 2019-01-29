@@ -221,8 +221,11 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    DateTime testTime = new DateTime.now();
+    List<String> testString = [''];
 
-
+Entry test = new Entry(testTime, '', testString, EntryType.meal);
+print(test.typeAsString(test.entryType));
 
 
     return Scaffold(
@@ -230,7 +233,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
 
-        title: Text('EmojiList+'),
+        title: Text('EmojiTrack+'),
         actions: <Widget>[
           PopupMenuButton<String>(
             onSelected: choiceAction,
@@ -270,7 +273,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       notesText = text;
       List<String> tempList = todaysEmotions.toList();
       newEntry = Entry(now, notesText, tempList, EntryType.mood);
-      journal.insert(0, newEntry);
+      journal.insert(0,newEntry);
 
       saveListOfObjectsToSharedPreferences(journalKey,
           journal); // saves whole journal with new entry to SharedPreferences library

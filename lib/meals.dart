@@ -117,7 +117,7 @@ class MealsWidgetState extends State<MealsWidget> {
           Entry newEntry = new Entry(combinedDateTime, eventNotes, mealAsAList, EntryType.meal);
                                                                                 // creates a new Entry with all of the information the user has selected.
 
-          this.widget.parent.journal.insert(0, newEntry);                             // adds the new Entry into the global journal to show up in Calendar View
+          this.widget.parent.journal.insert(0,newEntry);                             // adds the new Entry into the global journal to show up in Calendar View
 
           saveListOfObjectsToSharedPreferences(this.widget.parent.journalKey,
               this.widget.parent.journal); // saves whole journal with new entry to SharedPreferences library
