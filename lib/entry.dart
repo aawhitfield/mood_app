@@ -3,14 +3,15 @@ enum EntryType{
   meal,
   med
 }
-
+// TODO: Add EntryType to Entry Class as a parameter
 class Entry
 { // ASn entry on a person's mood. It records the data and time of the entry, user inputted noted, and a list of emotions selected by the user.
   DateTime eventTime;
   String eventNotes;
   List<String> emotionList;
+  EntryType entryType;
 
-  Entry(this.eventTime, this.eventNotes, this.emotionList);                     // constructor
+  Entry(this.eventTime, this.eventNotes, this.emotionList, this.entryType);                     // constructor
 
   Entry.fromJson(Map<String, dynamic> entry)                                    // custom decodes strings (e.g., from Shared Preferences back into an Entry object
   {
@@ -26,6 +27,7 @@ class Entry
     eventTime = DateTime.parse(entry['eventTime']);                             // uses built in DateTime parser for String -> DateTime
     eventNotes = entry['eventNotes'];
     emotionList =  _toListString(entry['emotionList']);
+    entryType = entry['entryType'];
 
 
   }
@@ -36,5 +38,20 @@ class Entry
         'eventTime': eventTime.toString(),
         'eventNotes': eventNotes,
         'emotionList': emotionList.toString(),
+        'entryType': typeAsString(entryType),
       };
+
+
+  String typeAsString(EntryType entryType){
+    String typeString = '';
+    switch (entryType){
+      case EntryType.mood : typeString = 'Mood';
+                            break;
+      case EntryType.meal : typeString = 'Meal';
+                            break;
+      case EntryType.med : typeString = 'Med';
+                          break;
+    }
+    return typeString;
+  }
 }

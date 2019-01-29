@@ -114,9 +114,10 @@ class MealsWidgetState extends State<MealsWidget> {
           String eventNotes = notesController.text;                             // stores the text from the Notes field into a variable eventNotes
 
           DateTime combinedDateTime = combineDateTime(_date, _time);            // combines the date from the Date Picker and the time from the TimePicker
-          Entry newEntry = new Entry(combinedDateTime, eventNotes, mealAsAList);// creates a new Entry with all of the information the user has selected.
+          Entry newEntry = new Entry(combinedDateTime, eventNotes, mealAsAList, EntryType.meal);
+                                                                                // creates a new Entry with all of the information the user has selected.
 
-          this.widget.parent.journal.add(newEntry);                             // adds the new Entry into the global journal to show up in Calendar View
+          this.widget.parent.journal.insert(0, newEntry);                             // adds the new Entry into the global journal to show up in Calendar View
 
           saveListOfObjectsToSharedPreferences(this.widget.parent.journalKey,
               this.widget.parent.journal); // saves whole journal with new entry to SharedPreferences library
@@ -124,16 +125,16 @@ class MealsWidgetState extends State<MealsWidget> {
           mealAsAList.clear();                                                  // clears the list containing the selectedMeal so it can be reused in the future
           notesController.clear();                                              // clears the user notes section so it can be reused in the future
 
-          Navigator.of(context).pop();                                          // closes the add meal screen and returns the user back the Calendar View
-          Navigator.of(context).pop();                                          // closes the Calendar View since it has old data
-          Navigator.push(                                                       // pushes the Calendar View right back, forcing a refresh
-              context,
-              new MaterialPageRoute(
-                  builder: (BuildContext context) => MyHomePage(title: 'EmojiList+',),
-              ),
-          );
+
+          Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+          });
+
+
+
+
+
+
         });
-      });
     }
 
     Future<void> _promptToSelectMeal() async {

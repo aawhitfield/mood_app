@@ -44,7 +44,10 @@ class MyAppState extends State<MyApp> {
     return new MaterialApp(
       title: 'Tracker App',
       theme: blueTheme,
-      home: MyHomePage(title: 'Tracker App'),
+      routes: <String, WidgetBuilder>{
+        '/home': (BuildContext context) => new MyHomePage(title: 'EmojiTrack+'),
+      },
+      home: MyHomePage(title: 'EmojiTrack+'),
     );
   }
 }
@@ -266,8 +269,8 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     setState(() {
       notesText = text;
       List<String> tempList = todaysEmotions.toList();
-      newEntry = Entry(now, notesText, tempList);
-      journal.add(newEntry);
+      newEntry = Entry(now, notesText, tempList, EntryType.mood);
+      journal.insert(0, newEntry);
 
       saveListOfObjectsToSharedPreferences(journalKey,
           journal); // saves whole journal with new entry to SharedPreferences library
