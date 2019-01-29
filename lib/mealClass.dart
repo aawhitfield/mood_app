@@ -15,19 +15,19 @@ class Meal{
   String toString(){                                                            // override to return a String of the enum type to make it more readable to the user
     switch(mealType) {
       case MealType.breakfast: {
-          return "breakfast";
+          return "Breakfast";
         }
         break;
       case MealType.lunch: {
-        return "lunch";
+        return "Lunch";
       }
       break;
       case MealType.dinner: {
-        return "dinner";
+        return "Dinner";
       }
       break;
       case MealType.snack: {
-        return "snack";
+        return "Snack";
       }
       break;
       default:

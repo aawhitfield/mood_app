@@ -2,7 +2,9 @@ import 'package:flutter/material.dart'; // all of the widgets needed for Flutter
 import 'main.dart'; // all of the language packages for Dart
 import 'mealClass.dart'; // access the enum and objects for the Meal Class
 import 'package:recase/recase.dart'; // able to change lowercase text -> title case for button labels
-import 'format_date_time.dart';
+import 'format_date_time.dart';                                                 // able to format strings from DateTime objects in human readable format
+import 'entry.dart';                                                            // able to work with the Entry class
+import 'save.dart';                                                             // enables saving the List<Objects> to SharedPreferences
 
 class MealsWidget extends StatefulWidget {
   final MyHomePageState parent;
@@ -84,6 +86,82 @@ class MealsWidgetState extends State<MealsWidget> {
     dateString = _dayOfWeek + ', ' + _month + ' ${_date.day}, ${_date.year}';
     _timeString = formatHour(_time.hour) + ':' + formatMinutes(_time.minute) + ' ' + formatAMPM(_time.hour);
 
+    bool checkAnyMealSelected(){                                                // checks to see if the user has selected any meal to record
+                                                                                // i.e., breakfast, lunch, etc. If not, will not run and clicking on the +
+                                                                                // icon will do nothing
+
+      bool flag = false;
+      mealList.forEach((meal){
+        (meal.state == true) ? flag = true: null;                               // loops through all the meals. If any one is true, then the function returns
+                                                                                // true, otherwise if none are selected, function returns false
+       });
+      return flag;
+    }
+
+    void addMealRecord(){                                                       // adds the meal record to the general Journal, saves it to
+                                                                                // Shared Preferences for permanent storage
+      setState(() {
+        this.widget.parent.setState((){                                         // updates UI in this widget/class/file as well as in main.dart
+          List<String> mealAsAList = <String>[];                                // place to store the meal type as List to satisfy the requirements of the Entry Class
+          String selectedMeal = '';                                             // placeholder String with the name of the meal user selected e.g., Breakfast
+          mealList.forEach((meal){
+            if(meal.state == true){                                             // loops through and find which meal was selected and then returns the name of the meal into selectedMeal String
+              selectedMeal = meal.toString();
+            }
+          });
+          mealAsAList.add(selectedMeal);                                        // adds the selectedMeal to the mealAsList to meet requirements of the Entry Class parameter type
+
+          String eventNotes = notesController.text;                             // stores the text from the Notes field into a variable eventNotes
+
+          DateTime combinedDateTime = combineDateTime(_date, _time);            // combines the date from the Date Picker and the time from the TimePicker
+          Entry newEntry = new Entry(combinedDateTime, eventNotes, mealAsAList);// creates a new Entry with all of the information the user has selected.
+
+          this.widget.parent.journal.add(newEntry);                             // adds the new Entry into the global journal to show up in Calendar View
+
+          saveListOfObjectsToSharedPreferences(this.widget.parent.journalKey,
+              this.widget.parent.journal); // saves whole journal with new entry to SharedPreferences library
+
+          mealAsAList.clear();                                                  // clears the list containing the selectedMeal so it can be reused in the future
+          notesController.clear();                                              // clears the user notes section so it can be reused in the future
+
+          Navigator.of(context).pop();                                          // closes the add meal screen and returns the user back the Calendar View
+          Navigator.of(context).pop();                                          // closes the Calendar View since it has old data
+          Navigator.push(                                                       // pushes the Calendar View right back, forcing a refresh
+              context,
+              new MaterialPageRoute(
+                  builder: (BuildContext context) => MyHomePage(title: 'EmojiList+',),
+              ),
+          );
+        });
+      });
+    }
+
+    Future<void> _promptToSelectMeal() async {
+      return showDialog<void>(
+        context: context,
+        barrierDismissible: false, // user must tap button!
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Meal Not Selected'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text('Please select a meal (breakfast, lunch, dinner, or snack to add an entry.'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -99,7 +177,8 @@ class MealsWidgetState extends State<MealsWidget> {
               icon: Icon(
                   Icons.add,
               color: Colors.white),
-              onPressed: null)
+              onPressed: checkAnyMealSelected() ? addMealRecord : _promptToSelectMeal,
+          ),
         ],
       ),
       body: ListView(
@@ -138,9 +217,9 @@ class MealsWidgetState extends State<MealsWidget> {
                         image: mealList[index]
                                 .state // activates colored image if its state property is toggled true, black&white if false
                             ? AssetImage(
-                                'graphics/${mealList[index].toString()}_colored.png')
+                                'graphics/${mealList[index].toString().toLowerCase()}.png')
                             : AssetImage(
-                                'graphics/${mealList[index].toString()}_bw.png'),
+                                'graphics/${mealList[index].toString().toLowerCase()}_bw.png'),
                         width: 64.0,
                         height: 64.0,
                       ),

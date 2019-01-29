@@ -19,7 +19,6 @@ class CalendarView extends StatefulWidget {
 class CalendarViewState extends State<CalendarView> {                           // a stateful widget
 
 
-
   @override
   Widget build(BuildContext context)
   {

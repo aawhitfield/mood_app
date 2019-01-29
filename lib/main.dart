@@ -79,7 +79,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   List<Entry> journal = <Entry>[]; // the list of all journal entries
   final scaffoldKey = GlobalKey<
       ScaffoldState>(); // sets a key to Scaffold so we can refer to it to call a Snackbar to alert users when entry has been added
-  final String _journalKey =
+  final String journalKey =
       'journalKey'; // the global key to the journal so it can be saved and restored to/from Shared Preferences
   final String mood = ''; // variable to store all of the moods a user selects
   bool colored =
@@ -145,7 +145,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   void initState() {
     // load the Calendar view from Shared Preferences on initial State
     journal.clear(); // clears the local variable to avoid duplicates
-    restoreListOfObjectsFromSharedPreferences(_journalKey)
+    restoreListOfObjectsFromSharedPreferences(journalKey)
         .then((stringListOfObjects) {
       // restores List from SharedPreferences string key
 
@@ -269,7 +269,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       newEntry = Entry(now, notesText, tempList);
       journal.add(newEntry);
 
-      saveListOfObjectsToSharedPreferences(_journalKey,
+      saveListOfObjectsToSharedPreferences(journalKey,
           journal); // saves whole journal with new entry to SharedPreferences library
       todaysEmotions.clear();
       notesController.clear();

@@ -1,4 +1,5 @@
 // A series of functions that work with DateTime objects and parses/formats them into user friendly Strings
+import 'package:flutter/material.dart';
 
 String dayOfWeek(DateTime dateTime) {
                                                                                 // takes a DateTime objects and returns a String containing the fully spelled out day of week. For an abbreviated String use abbreviatedWeekday
@@ -206,4 +207,11 @@ String formatDateTime(DateTime dateTime)                                        
   formattedDateTime = dayOfWeek(dateTime) + ', ' + fullMonth(dateTime) + ' ${dateTime.day}, ${dateTime.year} ~ ' + formatHour(dateTime.hour) + ':' + formatMinutes(dateTime.minute) + ' ' + formatAMPM(dateTime.hour);
 
   return formattedDateTime;
+}
+
+DateTime combineDateTime(DateTime dateTime, TimeOfDay timeOfDay){               // combines a DateTime (e.g., from a DatePicker) and a TimeOfDay (e.g., from a TimePicker) into a single DateTime
+
+  DateTime combinedDateTime = new DateTime(dateTime.year, dateTime.month, dateTime.day, timeOfDay.hour, timeOfDay.minute);
+
+  return combinedDateTime;
 }

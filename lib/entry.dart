@@ -1,5 +1,8 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+enum EntryType{
+  mood,
+  meal,
+  med
+}
 
 class Entry
 { // ASn entry on a person's mood. It records the data and time of the entry, user inputted noted, and a list of emotions selected by the user.
