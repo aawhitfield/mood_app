@@ -36,7 +36,7 @@ class MoodNotesDialog extends StatefulWidget                                    
               height: 14,
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 2.0),
+              padding: const EdgeInsets.only(left: 0.0),
               child: Text(
                 emotion,
                 style: TextStyle(
