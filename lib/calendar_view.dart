@@ -65,8 +65,9 @@ class CalendarViewState extends State<CalendarView> {                           
               width: 70.0,
               child: Column(
                 children: <Widget>[
-                  Image(
-                    image: AssetImage('graphics/${entry.emotionList[0]}.png'.toLowerCase()),        // if an entry has more than one category (emotion) then the first one selected will be the default image
+                  Image(                                                        // if an entry has more than one category (emotion) then the first one selected will be the default image
+                                                                                // displays generic medicine icon for meds, more specific for mood and meals
+                    image: entry.entryType == EntryType.med ? AssetImage('graphics/medicine.png'): AssetImage('graphics/${entry.emotionList[0]}.png'.toLowerCase()),
                     height: 32.0,
                     ),
                   Text(
