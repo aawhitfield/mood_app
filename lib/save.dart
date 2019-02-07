@@ -16,3 +16,18 @@ Future<void> saveListOfObjectsToSharedPreferences(String key, List objects) asyn
   SharedPreferences _sp = await SharedPreferences.getInstance();
   _sp.setString(key, _value);
 }
+
+Future<void> saveStringToSharedPreferences(String key, String value) async{
+  SharedPreferences _sp = await SharedPreferences.getInstance();
+  _sp.setString(key, value);
+}
+
+Future<void> saveListStringToSharedPreferences(String key, List<String> value) async{
+  SharedPreferences _sp = await SharedPreferences.getInstance();
+  _sp.setStringList(key, value);
+}
+
+Future<void> clearSharedPreferences(String key) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.remove(key);
+}

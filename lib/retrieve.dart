@@ -24,3 +24,20 @@ Future<List> restoreListOfObjectsFromSharedPreferences(String key) async
   }
   return list;                                                                  // returns the list for use
 }
+
+
+Future<String> restoreStringFromSharedPreferences(String key) async
+{
+  SharedPreferences _sp = await SharedPreferences.getInstance();
+  String _stream = _sp.getString(key);
+
+  return _stream;
+}
+
+Future<List<String>> restoreListStringFromSharedPreferences(String key) async
+{
+  SharedPreferences _sp = await SharedPreferences.getInstance();
+  List<String> _stream = _sp.getStringList(key);
+
+  return _stream;
+}
