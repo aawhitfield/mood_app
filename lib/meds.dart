@@ -5,8 +5,8 @@ import 'entry.dart';
 import 'save.dart';
 import 'retrieve.dart';
 
-// TODO: save last used medicine to Saved Preferences so it will always show up by default
-// TODO: save medicine list to Saved Preferences so users only have to add them once
+
+// TODO: decide on UI formatting and design for medicine popup
 class MedsWidget extends StatefulWidget {
   final MyHomePageState parent;
 
@@ -22,13 +22,15 @@ class MedsWidgetState extends State<MedsWidget> {
   String medicineName =
       'Medicine Name'; // text that will be the name of the medicine to get stored into the calendar entry journal
   List<String> medicineList =
-      []; // list of medicines to be saved for users to quickly reselect medicines
+  []; // list of medicines to be saved for users to quickly reselect medicines
   DateTime _date = new DateTime.now();
   TimeOfDay _time = new TimeOfDay.now();
   String dateString = '';
   String _timeString = '';
   final String medKey =
       'medKey'; // key for storing and retrieving medicine lists to/from Shared Preferences
+  final String medNameKey = 'medNameKey'; // key for storing / retrieving the last medicine name that was selected to make it faster for user to reuse common medicine
+
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -51,7 +53,7 @@ class MedsWidgetState extends State<MedsWidget> {
 
   Future<Null> _selectTime(BuildContext context) async {
     final TimeOfDay picked =
-        await showTimePicker(context: context, initialTime: _time);
+    await showTimePicker(context: context, initialTime: _time);
 
     if (picked != null && picked != _time) {
       setState(() {
@@ -106,7 +108,20 @@ class MedsWidgetState extends State<MedsWidget> {
         children: <Widget>[
           ListTile(
             leading: Icon(Icons.local_pharmacy),
-            title: Text(medicineName),
+            //title: Text(medicineName),
+            title: new FutureBuilder(
+              future: restoreStringFromSharedPreferences(medNameKey),
+              // a Future<String> or null
+              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                if (snapshot.hasError)
+                  return new Text('Error: ${snapshot.error}');
+                else if (snapshot.data == null) {
+                  return new Text('Medicine Name');
+                }
+                else
+                  return new Text('${snapshot.data}');
+              },
+            ),
             onTap: () {
               _selectMed(); // lets user change the name of the medicine for the journal entry
             },
@@ -141,21 +156,27 @@ class MedsWidgetState extends State<MedsWidget> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Container(
-                color: Theme.of(context).dividerColor,
+                color: Theme
+                    .of(context)
+                    .dividerColor,
                 padding: EdgeInsets.all(8.0),
                 child: TextField(
                   autofocus: true,
                   textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
                     hintText:
-                        'New medicine', // prompts user to enter a new medicine
-                    hintStyle: Theme.of(context).textTheme.headline,
+                    'New medicine', // prompts user to enter a new medicine
+                    hintStyle: Theme
+                        .of(context)
+                        .textTheme
+                        .headline,
                   ),
                   onSubmitted: (String text) {
                     setState(() {
                       medicineName = text;
                       medicineList.add(
                           medicineName); // adds user entry to a list to save for quick re-selection
+                      saveStringToSharedPreferences(medNameKey, medicineName);
                       saveListStringToSharedPreferences(medKey, medicineList);
                       Navigator.pop(context);
                     });
@@ -173,6 +194,8 @@ class MedsWidgetState extends State<MedsWidget> {
                         onTap: () {
                           setState(() {
                             medicineName = medicineList[index];
+                            saveStringToSharedPreferences(
+                                medNameKey, medicineName);
                             Navigator.pop(context);
                           });
                         },
@@ -190,7 +213,8 @@ class MedsWidgetState extends State<MedsWidget> {
       this.widget.parent.setState(() {
         // updates UI in this widget/class/file as well as in main.dart
         List<String> medAsAList = <
-            String>[]; // place to store the med type as List to satisfy the requirements of the Entry Class
+            String>[
+        ]; // place to store the med type as List to satisfy the requirements of the Entry Class
         medAsAList.add(
             medicineName); // adds the medicine name to the medAsList to meet requirements of the Entry Class parameter type
 
@@ -199,7 +223,7 @@ class MedsWidgetState extends State<MedsWidget> {
         DateTime combinedDateTime = combineDateTime(_date,
             _time); // combines the date from the Date Picker and the time from the TimePicker
         Entry newEntry =
-            new Entry(combinedDateTime, eventNotes, medAsAList, EntryType.med);
+        new Entry(combinedDateTime, eventNotes, medAsAList, EntryType.med);
         // creates a new Entry with all of the information the user has selected.
 
         this.widget.parent.journal.insert(0,
