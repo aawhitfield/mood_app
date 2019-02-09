@@ -5,7 +5,6 @@ import 'entry.dart';
 import 'save.dart';
 import 'retrieve.dart';
 
-// TODO: decide on UI formatting and design for medicine popup
 class MedsWidget extends StatefulWidget {
   final MyHomePageState parent;
 
@@ -196,14 +195,17 @@ class MedsWidgetState extends State<MedsWidget> {
                   autofocus: true,
                   textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(8.0),
                     hintText:
-                        'New medicine', // prompts user to enter a new medicine
-                    hintStyle: Theme.of(context).textTheme.headline,
+                        'Enter new medicine name', // prompts user to enter a new medicine
+                    hintStyle: TextStyle(
+                      color: Colors.grey[500],
+                    ),
                   ),
                   onSubmitted: (String text) {
                     setState(() {
                       medicineName = text;
-                      medicineList.add(
+                      medicineList.insert(0,
                           medicineName); // adds user entry to a list to save for quick re-selection
                       saveStringToSharedPreferences(medNameKey, medicineName);
                       saveListStringToSharedPreferences(medKey, medicineList);
@@ -212,6 +214,13 @@ class MedsWidgetState extends State<MedsWidget> {
                   },
                 ),
               ),
+              ListTile(
+                title: Text('Previously Entered',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),),
+              ),
+              Divider(),
               Expanded(
                 // expanded prevents overflow on the ListView and makes it scrollable
                 child: ListView.builder(
