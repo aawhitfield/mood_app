@@ -3,7 +3,7 @@ enum EntryType{
   meal,
   med
 }
-// TODO: Add EntryType to Entry Class as a parameter
+
 class Entry
 { // ASn entry on a person's mood. It records the data and time of the entry, user inputted noted, and a list of emotions selected by the user.
   DateTime eventTime;

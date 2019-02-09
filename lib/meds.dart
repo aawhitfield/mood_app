@@ -5,7 +5,6 @@ import 'entry.dart';
 import 'save.dart';
 import 'retrieve.dart';
 
-
 // TODO: decide on UI formatting and design for medicine popup
 class MedsWidget extends StatefulWidget {
   final MyHomePageState parent;
@@ -22,15 +21,18 @@ class MedsWidgetState extends State<MedsWidget> {
   String medicineName =
       'Medicine Name'; // text that will be the name of the medicine to get stored into the calendar entry journal
   List<String> medicineList =
-  []; // list of medicines to be saved for users to quickly reselect medicines
+      []; // list of medicines to be saved for users to quickly reselect medicines
   DateTime _date = new DateTime.now();
   TimeOfDay _time = new TimeOfDay.now();
   String dateString = '';
   String _timeString = '';
   final String medKey =
       'medKey'; // key for storing and retrieving medicine lists to/from Shared Preferences
-  final String medNameKey = 'medNameKey'; // key for storing / retrieving the last medicine name that was selected to make it faster for user to reuse common medicine
-
+  final String medNameKey =
+      'medNameKey'; // key for storing / retrieving the last medicine name that was selected to make it faster for user to reuse common medicine
+  TextEditingController
+      notesController; // access text of notes to pass to journal entry
+  String notes = ''; // medicine notes
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -53,7 +55,7 @@ class MedsWidgetState extends State<MedsWidget> {
 
   Future<Null> _selectTime(BuildContext context) async {
     final TimeOfDay picked =
-    await showTimePicker(context: context, initialTime: _time);
+        await showTimePicker(context: context, initialTime: _time);
 
     if (picked != null && picked != _time) {
       setState(() {
@@ -99,29 +101,38 @@ class MedsWidgetState extends State<MedsWidget> {
               Icons.add,
               color: Colors.white,
             ),
-            onPressed: addMedRecord,
+            onPressed: () {
+              addMedRecord(notes);
+            },
           )
           // adds medicine entry to the journal
         ],
       ),
-      body: Column(
+      body: new ListView(
+        shrinkWrap: true,
         children: <Widget>[
           ListTile(
             leading: Icon(Icons.local_pharmacy),
+
             //title: Text(medicineName),
+
             title: new FutureBuilder(
               future: restoreStringFromSharedPreferences(medNameKey),
+
               // a Future<String> or null
+
               builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                medicineName = snapshot.data;
+
                 if (snapshot.hasError)
                   return new Text('Error: ${snapshot.error}');
                 else if (snapshot.data == null) {
                   return new Text('Medicine Name');
-                }
-                else
+                } else
                   return new Text('${snapshot.data}');
               },
             ),
+
             onTap: () {
               _selectMed(); // lets user change the name of the medicine for the journal entry
             },
@@ -141,6 +152,29 @@ class MedsWidgetState extends State<MedsWidget> {
             ),
           ),
           Divider(),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: notesController,
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.subject),
+                hintText: null,
+                border: OutlineInputBorder(),
+                labelText: 'Notes',
+              ),
+              textCapitalization: TextCapitalization.sentences,
+              maxLines: 3,
+              onSubmitted: (text) {
+                setState(() {
+                  addMedRecord(text);
+                });
+              },
+              onChanged: (text) {
+                notes = text;
+              },
+            ),
+          ),
+          Divider(),
         ],
       ),
     );
@@ -156,20 +190,15 @@ class MedsWidgetState extends State<MedsWidget> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Container(
-                color: Theme
-                    .of(context)
-                    .dividerColor,
+                color: Theme.of(context).dividerColor,
                 padding: EdgeInsets.all(8.0),
                 child: TextField(
                   autofocus: true,
                   textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
                     hintText:
-                    'New medicine', // prompts user to enter a new medicine
-                    hintStyle: Theme
-                        .of(context)
-                        .textTheme
-                        .headline,
+                        'New medicine', // prompts user to enter a new medicine
+                    hintStyle: Theme.of(context).textTheme.headline,
                   ),
                   onSubmitted: (String text) {
                     setState(() {
@@ -207,23 +236,20 @@ class MedsWidgetState extends State<MedsWidget> {
         ));
   }
 
-  void addMedRecord() {
+  void addMedRecord(String eventNotes) {
     // adds the med record to the general Journal, saves it to Shared Preferences for permanent storage
     setState(() {
       this.widget.parent.setState(() {
         // updates UI in this widget/class/file as well as in main.dart
         List<String> medAsAList = <
-            String>[
-        ]; // place to store the med type as List to satisfy the requirements of the Entry Class
+            String>[]; // place to store the med type as List to satisfy the requirements of the Entry Class
         medAsAList.add(
             medicineName); // adds the medicine name to the medAsList to meet requirements of the Entry Class parameter type
-
-        String eventNotes = ''; // TODO: implement med notes
 
         DateTime combinedDateTime = combineDateTime(_date,
             _time); // combines the date from the Date Picker and the time from the TimePicker
         Entry newEntry =
-        new Entry(combinedDateTime, eventNotes, medAsAList, EntryType.med);
+            new Entry(combinedDateTime, eventNotes, medAsAList, EntryType.med);
         // creates a new Entry with all of the information the user has selected.
 
         this.widget.parent.journal.insert(0,
@@ -238,7 +264,7 @@ class MedsWidgetState extends State<MedsWidget> {
 
         medAsAList
             .clear(); // clears the list containing the medicine so it can be reused in the future
-//      notesController.clear();                                              // clears the user notes section so it can be reused in the future TODO: implement med notes controller
+
 
         Navigator.of(context)
             .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
