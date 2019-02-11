@@ -254,7 +254,7 @@ print(test.typeAsString(test.entryType));
       key: scaffoldKey,
 
 
-      drawer: UserDrawer(this),
+      //drawer: UserDrawer(this),                                               TODO: un-comment when ready to deploy drawer
 
       floatingActionButton: AnimatedFloatingActionButton(this),
     );
