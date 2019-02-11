@@ -20,7 +20,7 @@ class UserDrawerState extends State<UserDrawer> {
 // TODO: make Drawer have dynamic content
 
   String defaultUserAccountName =
-      ''; // Text to display fot the default user account until a user name has been entered
+      ' '; // Text to display fot the default user account until a user name has been entered
   String defaultUserKey =
       'defaultUserKey'; // Shared Preferences key to save default user account string
   TextEditingController nameController = new TextEditingController();
@@ -31,6 +31,7 @@ class UserDrawerState extends State<UserDrawer> {
       child: new ListView(
         children: <Widget>[
           new UserAccountsDrawerHeader(
+
               accountName: GestureDetector(
                   child: FutureBuilder(
                     future: restoreStringFromSharedPreferences(defaultUserKey),
@@ -53,12 +54,27 @@ class UserDrawerState extends State<UserDrawer> {
                   }),
               accountEmail: null,
               currentAccountPicture: new CircleAvatar(
-                child: new Text(
-                  defaultUserAccountName[0],
-                  style: TextStyle(
-                    fontSize: 48.0,
-                  ),
-                  ),
+                child: FutureBuilder(
+                  future: restoreStringFromSharedPreferences(defaultUserKey),
+
+                  // a Future<String> or null
+
+                  builder:
+                      (BuildContext context, AsyncSnapshot<String> snapshot) {
+                    defaultUserAccountName = snapshot.data;
+                    if (snapshot.data == null) {
+                      return new Text(' ');
+                    }
+                    else {
+                      return new Text(
+                        '${snapshot.data}'[0],
+                        style: TextStyle(
+                          fontSize: 48.0,
+                        ),
+                      );
+                    }
+                  },
+                ),
               ),
               otherAccountsPictures: <Widget>[
                 CircleAvatar(
@@ -67,7 +83,8 @@ class UserDrawerState extends State<UserDrawer> {
                 CircleAvatar(
                   child: Text('S'),
                 ),
-              ]),
+              ],
+    ),
           new ListTile(
             leading: Icon(Icons.calendar_today),
             title: Text('Calendar View'),
@@ -141,5 +158,16 @@ class UserDrawerState extends State<UserDrawer> {
           });// ...
         break;
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      restoreStringFromSharedPreferences(defaultUserAccountName).then((value) {
+        defaultUserAccountName = value;
+      });
+    });
   }
 }

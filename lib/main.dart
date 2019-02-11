@@ -116,14 +116,14 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   void choiceAction(String choice){
     switch(choice){
-      case 'Settings'
-          : Navigator.push(
-                context,
-                new MaterialPageRoute(
-                    builder: (BuildContext context) => SettingsPage(),
-                ),
-            );
-            break;
+//      case 'Settings'                                                         // un-comment out of master branch when ready to deploy
+//          : Navigator.push(
+//                context,
+//                new MaterialPageRoute(
+//                    builder: (BuildContext context) => SettingsPage(),
+//                ),
+//            );
+//            break;
       case 'Credits'
           : Navigator.push(
                 context,
@@ -254,7 +254,7 @@ print(test.typeAsString(test.entryType));
       key: scaffoldKey,
 
 
-      drawer: UserDrawer(this),
+//      drawer: UserDrawer(this),                                               // TODO: Uncomment out of master channel when ready for production
 
       floatingActionButton: AnimatedFloatingActionButton(this),
     );
