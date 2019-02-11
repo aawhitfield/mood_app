@@ -13,8 +13,10 @@ class SettingsPage extends StatelessWidget {
           },
         ),
       ),
-      body: Center(
-        child: Text('Settings'),
+      body: Column(
+        children: <Widget>[
+          Text('Emotions to track'),
+        ],
       ),
     );
   }
