@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
-import 'save.dart';
-import 'retrieve.dart';
+import 'package:mood_app/backend/save.dart';
+import 'package:mood_app/backend/retrieve.dart';
 
 enum DialogOptions { CANCEL, OK }
 
@@ -19,8 +19,7 @@ class UserDrawer extends StatefulWidget {
 class UserDrawerState extends State<UserDrawer> {
 // TODO: make Drawer have dynamic content
 
-  String defaultUserAccountName =
-      ''; // Text to display fot the default user account until a user name has been entered
+  String defaultUserAccountName = ' ';
   String defaultUserKey =
       'defaultUserKey'; // Shared Preferences key to save default user account string
   TextEditingController nameController = new TextEditingController();
@@ -39,11 +38,15 @@ class UserDrawerState extends State<UserDrawer> {
 
                     builder:
                         (BuildContext context, AsyncSnapshot<String> snapshot) {
-                      defaultUserAccountName = snapshot.data;
+                      widget.parent.users[this.widget.parent.currentUser].name =
+                          snapshot.data;
+                      defaultUserAccountName = widget
+                          .parent
+                          .users[this.widget.parent.currentUser]
+                          .name; // Text to display fot the default user account until a user name has been entered
                       if (snapshot.data == null) {
-                        return new Text('Default User');
-                      }
-                      else {
+                        return new Text(defaultUserAccountName);
+                      } else {
                         return new Text('${snapshot.data}');
                       }
                     },
@@ -53,12 +56,28 @@ class UserDrawerState extends State<UserDrawer> {
                   }),
               accountEmail: null,
               currentAccountPicture: new CircleAvatar(
-                child: new Text(
-                  defaultUserAccountName[0],
-                  style: TextStyle(
-                    fontSize: 48.0,
-                  ),
-                  ),
+                child: new FutureBuilder(
+                  future: restoreStringFromSharedPreferences(defaultUserKey),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<String> snapshot) {
+                    widget.parent.users[this.widget.parent.currentUser].name =
+                        snapshot.data;
+                    defaultUserAccountName = widget
+                        .parent
+                        .users[this.widget.parent.currentUser]
+                        .name; // Text to display fot the default user account until a user name has been entered
+                    if (snapshot.data == null) {
+                      return new Text(' ');
+                    } else {
+                      return new Text(
+                        '${snapshot.data[0]}',
+                        style: TextStyle(
+                          fontSize: 48.0,
+                        ),
+                      );
+                    }
+                  },
+                ),
               ),
               otherAccountsPictures: <Widget>[
                 CircleAvatar(
@@ -135,10 +154,10 @@ class UserDrawerState extends State<UserDrawer> {
         // ...
         break;
       case DialogOptions.OK:
-          setState(() {
-            defaultUserAccountName = nameController.text;
-            saveStringToSharedPreferences(defaultUserKey, defaultUserAccountName);
-          });// ...
+        setState(() {
+          defaultUserAccountName = nameController.text;
+          saveStringToSharedPreferences(defaultUserKey, defaultUserAccountName);
+        }); // ...
         break;
     }
   }

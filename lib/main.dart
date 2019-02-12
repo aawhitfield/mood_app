@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'mood_notes.dart';
 import 'calendar_view.dart';
-import 'entry.dart';
-import 'save.dart';
+import 'package:mood_app/backend/entry.dart';
+import 'package:mood_app/backend/save.dart';
 import 'dart:convert';
-import 'retrieve.dart';
+import 'package:mood_app/backend/retrieve.dart';
 import 'drawer.dart';
 import 'package:flutter/animation.dart';
 import 'animated_floating_action_button.dart';
 import 'menu/menu.dart';
 import 'menu/settings.dart';
 import 'menu/credits.dart';
-import 'emotions.dart';                                                         // contains the list of all emotions the user can track  plus the ones the user selected to track
+import 'package:mood_app/backend/emotions.dart';                                                         // contains the list of all emotions the user can track  plus the ones the user selected to track
+import 'package:mood_app/backend/user.dart';
 
 void main() => runApp(MyApp());
 
@@ -81,6 +82,10 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   DateTime now; // the current DateTime reported from the OS
   Entry newEntry; // new entry to the journal to be displayed in Calendar mode
   List<Entry> journal = <Entry>[]; // the list of all journal entries
+  List<User> users = <User>[new User(0, 'Default Name', ' ', <Entry>[])];
+  int currentUser = 0;            // the position the currentUser is in the User array
+  User defaultUser;
+
   final scaffoldKey = GlobalKey<
       ScaffoldState>(); // sets a key to Scaffold so we can refer to it to call a Snackbar to alert users when entry has been added
   final String journalKey =
@@ -137,8 +142,10 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   @override // prevents users from adding a note with no emotions
   void initState() {
+    defaultUser = users[currentUser];
+
     // load the Calendar view from Shared Preferences on initial State
-    journal.clear(); // clears the local variable to avoid duplicates
+    users[currentUser].journal.clear(); // clears the local variable to avoid duplicates
     restoreListOfObjectsFromSharedPreferences(journalKey)
         .then((stringListOfObjects) {
       // restores List from SharedPreferences string key
@@ -156,10 +163,11 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             map); // creates Entry objects with contents of Map
 
         setState((){
-          journal.add(
+          users[currentUser].journal.add(
               entry);
         }); // adds the Entry to journal List to complete the restore.
       });
+
     });
 
     restoreListStringFromSharedPreferences('settingsEmotionsKey')
@@ -256,7 +264,7 @@ print(test.typeAsString(test.entryType));
       ),
       body: CalendarView(
           entries:
-              journal),
+              users[currentUser].journal),
       key: scaffoldKey,
 
 
@@ -279,10 +287,10 @@ print(test.typeAsString(test.entryType));
       notesText = text;
       List<String> tempList = todaysEmotions.toList();
       newEntry = Entry(now, notesText, tempList, EntryType.mood);
-      journal.insert(0,newEntry);
+      users[currentUser].journal.insert(0,newEntry);
 
       saveListOfObjectsToSharedPreferences(journalKey,
-          journal); // saves whole journal with new entry to SharedPreferences library
+          users[currentUser].journal); // saves whole journal with new entry to SharedPreferences library
       todaysEmotions.clear();
       notesController.clear();
       Navigator.pop(context);
