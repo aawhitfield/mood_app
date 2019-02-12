@@ -12,6 +12,7 @@ import 'animated_floating_action_button.dart';
 import 'menu/menu.dart';
 import 'menu/settings.dart';
 import 'menu/credits.dart';
+import 'emotions.dart';                                                         // contains the list of all emotions the user can track  plus the ones the user selected to track
 
 void main() => runApp(MyApp());
 
@@ -98,19 +99,9 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Animation<double> animation3;
   // ***************                                                            // end of variables for animated floating action button
 
-  List<String> emotions = <String>[
-    // the list of emotions that will be displayed to the user to select how they or someone is feeling today
-    'Happy',
-    'Angry',
-    'Sad',
-    'Scared',
-    'Tired',
-    'Wiggly',
-    'Hyper',
-    'Grumpy',
-    'Robotic',
-    'Calm',
-  ];
+
+
+
   List<String> todaysEmotions =
       <String>[];                                                               // the list of all emotions the user selects in a single entry
 
@@ -169,6 +160,21 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               entry);
         }); // adds the Entry to journal List to complete the restore.
       });
+    });
+
+    restoreListStringFromSharedPreferences('settingsEmotionsKey')
+      .then((stringList) {
+
+        setState((){
+          if (stringList != null) {
+            emotions.clear();
+            stringList.forEach((element){
+              emotions.add(element);
+            });
+          }
+
+        });
+
     });
 
     // **************                                                           // set of commands to handle animations of the animated floating action button
