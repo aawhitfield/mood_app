@@ -260,7 +260,7 @@ print(test.typeAsString(test.entryType));
       key: scaffoldKey,
 
 
-      //drawer: UserDrawer(this),                                               TODO: un-comment when ready to deploy drawer
+      drawer: UserDrawer(this),
 
       floatingActionButton: AnimatedFloatingActionButton(this),
     );
