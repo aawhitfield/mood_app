@@ -10,6 +10,13 @@ List<String> allEmotions = <String>[
   'Grumpy',
   'Robotic',
   'Calm',
+  'Annoyed',
+  'Bored',
+  'Lonely',
+  'Relaxed',
+  'Restless',
+  'Sick',
+  'Stressed',
 ];
 
 List<String> emotions = <String>[
