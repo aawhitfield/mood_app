@@ -261,15 +261,17 @@ class MedsWidgetState extends State<MedsWidget> {
             new Entry(combinedDateTime, eventNotes, medAsAList, EntryType.med);
         // creates a new Entry with all of the information the user has selected.
 
-        this.widget.parent.journal.insert(0,
+        this.widget.parent.users[this.widget.parent.currentUser].journal.insert(0,
             newEntry); // adds the new Entry into the global journal to show up in Calendar View at the beginning of the list
 
-        saveListOfObjectsToSharedPreferences(
-            this.widget.parent.journalKey,
-            this
-                .widget
-                .parent
-                .journal); // saves whole journal with new entry to SharedPreferences library
+//        saveListOfObjectsToSharedPreferences(
+//            this.widget.parent.journalKey,
+//            this
+//                .widget
+//                .parent
+//                .journal); // saves whole journal with new entry to SharedPreferences library
+
+        saveUserAccount(this.widget.parent.userKey, this.widget.parent.currentUser, this.widget.parent.users[this.widget.parent.currentUser]);
 
         medAsAList
             .clear(); // clears the list containing the medicine so it can be reused in the future

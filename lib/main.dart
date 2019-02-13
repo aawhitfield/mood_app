@@ -81,15 +81,19 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       new TextEditingController(); // Text controller to handle the Notes TextView in the add mood entry mode
   DateTime now; // the current DateTime reported from the OS
   Entry newEntry; // new entry to the journal to be displayed in Calendar mode
-  List<Entry> journal = <Entry>[]; // the list of all journal entries
+  //List<Entry> journal = <Entry>[]; // the list of all journal entries
   List<User> users = <User>[new User(0, 'Default Name', ' ', <Entry>[])];
   int currentUser = 0;            // the position the currentUser is in the User array
-  User defaultUser;
+  String currentUserName = 'Default Name';
 
   final scaffoldKey = GlobalKey<
       ScaffoldState>(); // sets a key to Scaffold so we can refer to it to call a Snackbar to alert users when entry has been added
   final String journalKey =
       'journalKey'; // the global key to the journal so it can be saved and restored to/from Shared Preferences
+  final String currentUserKey = 'currentUserKey';
+  final String numberOfUsersKey = 'numberOfUsersKey';
+  int numberOfUsers = 1;
+  final String userKey = 'userKey';
   final String mood = ''; // variable to store all of the moods a user selects
   bool colored =
       true; // sets the selected Meal icon to be colored or black/white
@@ -142,33 +146,90 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   @override // prevents users from adding a note with no emotions
   void initState() {
-    defaultUser = users[currentUser];
 
-    // load the Calendar view from Shared Preferences on initial State
-    users[currentUser].journal.clear(); // clears the local variable to avoid duplicates
-    restoreListOfObjectsFromSharedPreferences(journalKey)
-        .then((stringListOfObjects) {
-      // restores List from SharedPreferences string key
 
-      stringListOfObjects.forEach((stringObject) {
-        // formats List further so it parses back into Entry object correctly.
-        if (!stringObject.toString().endsWith('}')) {
-          stringObject += '}';
+    //*************************************************************
+    // Restores all user accounts from Shared Preferences
+    restoreIntFromSharedPreferences(numberOfUsersKey).then((numUsers){
+      print(numUsers);
+      if(numUsers == null) {
+        numberOfUsers = 1;
+
+      }
+      else {
+        numberOfUsers = numUsers;
+      }
+
+        for (var i = 0; i < numberOfUsers; i++){
+          int id = i;
+          String name = ' ';
+          String avatar = name[0];
+          List<Entry> journal = new List();
+
+          restoreIntFromSharedPreferences(userKey + 'id $i').then((userID){
+            if(userID != null){
+              id = userID;
+              restoreStringFromSharedPreferences(userKey + 'name $i').then((userName){
+
+                if(userName != null)
+                  {
+                    name = userName;
+                    String avatar = name[0];
+                    restoreListOfObjectsFromSharedPreferences(userKey + 'journal $i')
+                        .then((stringListOfObjects) {
+                      // restores List from SharedPreferences string key
+
+                      stringListOfObjects.forEach((stringObject) {
+                        // formats List further so it parses back into Entry object correctly.
+                        if (!stringObject.toString().endsWith('}')) {
+                          stringObject += '}';
+                        }
+
+                        Map<String, dynamic> map = json.decode(
+                            stringObject); // uses JSON library to decode the string containing the List<Object> -> Map
+
+                        Entry entry = new Entry.fromJson(
+                            map); // creates Entry objects with contents of Map
+
+                        setState((){
+                          journal.add(entry);
+                        }); // adds the Entry to journal List to complete the restore.
+                      });
+
+                    });
+                  }
+              });
+            }
+          });
+          User user = new User(id, name, avatar, journal);
+          if(id == 0)
+          {
+            users[0] = user;
+          }
+          else{
+            users.add(user);
+          }
         }
-
-        Map<String, dynamic> map = json.decode(
-            stringObject); // uses JSON library to decode the string containing the List<Object> -> Map
-
-        Entry entry = new Entry.fromJson(
-            map); // creates Entry objects with contents of Map
-
-        setState((){
-          users[currentUser].journal.add(
-              entry);
-        }); // adds the Entry to journal List to complete the restore.
-      });
-
     });
+
+    restoreIntFromSharedPreferences(currentUserKey).then((value){
+      setState((){
+        if (value == null)
+          {
+            currentUser = 0;
+          }
+          else
+          {
+            currentUser = value;
+          }
+
+      });
+    });
+
+
+
+    //****************************************************************************
+    // End restore user accounts from Shared Preferences
 
     restoreListStringFromSharedPreferences('settingsEmotionsKey')
       .then((stringList) {
@@ -184,6 +245,16 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         });
 
     });
+    
+    
+    restoreStringFromSharedPreferences(userKey + 'name $currentUser').then((name){
+      if(name != null){
+        setState((){
+          currentUserName = name;
+        });
+      }
+    });
+
 
     // **************                                                           // set of commands to handle animations of the animated floating action button
     controller = new AnimationController(
@@ -239,7 +310,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     List<String> testString = [''];
 
 Entry test = new Entry(testTime, '', testString, EntryType.meal);
-print(test.typeAsString(test.entryType));
+
 
 
     return Scaffold(
@@ -288,9 +359,8 @@ print(test.typeAsString(test.entryType));
       List<String> tempList = todaysEmotions.toList();
       newEntry = Entry(now, notesText, tempList, EntryType.mood);
       users[currentUser].journal.insert(0,newEntry);
-
-      saveListOfObjectsToSharedPreferences(journalKey,
-          users[currentUser].journal); // saves whole journal with new entry to SharedPreferences library
+      User user = new User(currentUser, currentUserName, currentUserName[0], users[currentUser].journal);
+      saveUserAccount(userKey, currentUser, user);
       todaysEmotions.clear();
       notesController.clear();
       Navigator.pop(context);
