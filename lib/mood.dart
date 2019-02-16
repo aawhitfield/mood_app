@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
+import 'package:mood_app/backend/emotions.dart';
 
 class MoodContainer
     extends StatefulWidget // creates a custom stateful widget for the Mood tab
@@ -46,6 +47,9 @@ class MoodContainerState
       body: new Container(
         child: _buildEmotionList(),
       ),
+
+
+
     );
   }
 
@@ -58,8 +62,8 @@ class MoodContainerState
         return new Divider();
       }
       final int index = i ~/ 2;
-      if (index < this.widget.parent.emotions.length) {
-        return _buildRow(this.widget.parent.emotions[index]);
+      if (index < emotions.length) {
+        return _buildRow(emotions[index]);
       }
     });
   }

@@ -41,3 +41,11 @@ Future<List<String>> restoreListStringFromSharedPreferences(String key) async
 
   return _stream;
 }
+
+Future<int> restoreIntFromSharedPreferences(String key) async
+{
+  SharedPreferences _sp = await SharedPreferences.getInstance();
+  int _stream = _sp.getInt(key);
+
+  return _stream;
+}
