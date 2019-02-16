@@ -21,6 +21,7 @@ class UserDrawer extends StatefulWidget {
 class UserDrawerState extends State<UserDrawer> {
 
   String accountName = ' ';
+
   String defaultUserKey =
       'defaultUserKey'; // Shared Preferences key to save default user account string
   TextEditingController nameController = new TextEditingController();
@@ -31,6 +32,7 @@ class UserDrawerState extends State<UserDrawer> {
       child: new ListView(
         children: <Widget>[
           new UserAccountsDrawerHeader(
+
             accountName: GestureDetector(
                 child: FutureBuilder(
                   future: restoreStringFromSharedPreferences(this.widget.parent.userKey + 'name ${this.widget.parent.currentUser}'),
@@ -39,6 +41,7 @@ class UserDrawerState extends State<UserDrawer> {
 
                   builder:
                       (BuildContext context, AsyncSnapshot<String> snapshot) {
+
                     widget.parent.users[this.widget.parent.currentUser].name =
                         snapshot.data;
                     accountName = widget
@@ -81,6 +84,7 @@ class UserDrawerState extends State<UserDrawer> {
               ),
             ),
           ),
+
           new ListTile(
             leading: Icon(Icons.calendar_today),
             title: Text('Calendar View'),
@@ -169,6 +173,7 @@ class UserDrawerState extends State<UserDrawer> {
         break;
     }
   }
+
 
   void addAccount() {
     // TODO: add circle avatar on add account instead of replace default
@@ -329,4 +334,5 @@ class UserDrawerState extends State<UserDrawer> {
           );
         });
   }
+
 }
