@@ -341,7 +341,7 @@ Entry test = new Entry(testTime, '', testString, EntryType.meal);
       key: scaffoldKey,
 
 
-//      drawer: UserDrawer(this),                                               // TODO: Uncomment out of master channel when ready for production
+      drawer: UserDrawer(this),
 
       floatingActionButton: AnimatedFloatingActionButton(this),
     );
