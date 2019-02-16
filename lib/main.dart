@@ -50,6 +50,7 @@ class MyAppState extends State<MyApp> {
         '/home': (BuildContext context) => new MyHomePage(title: 'EmojiTrack+'),
       },
       home: MyHomePage(title: 'EmojiTrack+'),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -116,14 +117,14 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   void choiceAction(String choice){
     switch(choice){
-//      case 'Settings'                                                         // un-comment out of master branch when ready to deploy
-//          : Navigator.push(
-//                context,
-//                new MaterialPageRoute(
-//                    builder: (BuildContext context) => SettingsPage(),
-//                ),
-//            );
-//            break;
+      case 'Settings'
+          : Navigator.push(
+                context,
+                new MaterialPageRoute(
+                    builder: (BuildContext context) => SettingsPage(),
+                ),
+            );
+            break;
       case 'Credits'
           : Navigator.push(
                 context,

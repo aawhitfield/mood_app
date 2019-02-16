@@ -231,9 +231,13 @@ class MealsWidgetState extends State<MealsWidget> {
                         height: 64.0,
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
+                        padding: const EdgeInsets.only(top: 0.0),
                         child: Text(
-                            '${ReCase(mealList[index].toString()).titleCase}'), // uses ReCase to convert from lowercase -> titleCase for formatting
+                            '${ReCase(mealList[index].toString()).titleCase}',
+                            style: TextStyle(
+                              fontSize: 11,
+                            ),
+                        ), // uses ReCase to convert from lowercase -> titleCase for formatting
                       ),
                     ],
                   ),
