@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mood_app/backend/emotions.dart';
 import 'package:mood_app/backend/save.dart';
 // TODO: Control how to SORT emotion list
-// TODO: Add additional emotions to list
 class SettingsPage extends StatefulWidget {
   @override
   SettingsPageState createState() {

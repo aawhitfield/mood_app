@@ -19,7 +19,6 @@ class UserDrawer extends StatefulWidget {
 }
 
 class UserDrawerState extends State<UserDrawer> {
-// TODO: make Drawer have dynamic content
 
   String accountName = ' ';
   String defaultUserKey =
@@ -32,34 +31,12 @@ class UserDrawerState extends State<UserDrawer> {
       child: new ListView(
         children: <Widget>[
           new UserAccountsDrawerHeader(
-              accountName: GestureDetector(
-                  child: FutureBuilder(
-                    future: restoreStringFromSharedPreferences(defaultUserKey),
+            accountName: GestureDetector(
+                child: FutureBuilder(
+                  future: restoreStringFromSharedPreferences(this.widget.parent.userKey + 'name ${this.widget.parent.currentUser}'),
 
-                    // a Future<String> or null
+                  // a Future<String> or null
 
-                    builder:
-                        (BuildContext context, AsyncSnapshot<String> snapshot) {
-                      widget.parent.users[this.widget.parent.currentUser].name =
-                          snapshot.data;
-                      accountName = widget
-                          .parent
-                          .users[this.widget.parent.currentUser]
-                          .name; // Text to display fot the default user account until a user name has been entered
-                      if (snapshot.data == null) {
-                        return new Text('Default User');
-                      } else {
-                        return new Text('${snapshot.data}');
-                      }
-                    },
-                  ),
-                  onTap: () {
-                    _promptChangeUserName(); // lets user change the name of the medicine for the journal entry
-                  }),
-              accountEmail: null,
-              currentAccountPicture: new CircleAvatar(
-                child: new FutureBuilder(
-                  future: restoreStringFromSharedPreferences(defaultUserKey),
                   builder:
                       (BuildContext context, AsyncSnapshot<String> snapshot) {
                     widget.parent.users[this.widget.parent.currentUser].name =
@@ -69,27 +46,40 @@ class UserDrawerState extends State<UserDrawer> {
                         .users[this.widget.parent.currentUser]
                         .name; // Text to display fot the default user account until a user name has been entered
                     if (snapshot.data == null) {
-                      return new Text(' ');
+                      return new Text('Tap to enter name');
                     } else {
-                      return new Text(
-                        '${snapshot.data[0]}',
-                        style: TextStyle(
-                          fontSize: 48.0,
-                        ),
-                      );
+                      return new Text('${snapshot.data}');
                     }
                   },
                 ),
+                onTap: () {
+                  _promptChangeUserName(this.widget.parent.users[this.widget.parent.currentUser].id); // lets user change the name of the medicine for the journal entry
+                }),
+            accountEmail: null,
+            currentAccountPicture: new CircleAvatar(
+              child: new FutureBuilder(
+                future: restoreStringFromSharedPreferences(this.widget.parent.userKey + 'name ${this.widget.parent.currentUser}'),
+                builder:
+                    (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  widget.parent.users[this.widget.parent.currentUser].name =
+                      snapshot.data;
+                  accountName = widget
+                      .parent
+                      .users[this.widget.parent.currentUser]
+                      .name; // Text to display fot the default user account until a user name has been entered
+                  if (snapshot.data == null) {
+                    return new Text(' ');
+                  } else {
+                    return new Text(
+                      '${snapshot.data[0]}',
+                      style: TextStyle(
+                        fontSize: 48.0,
+                      ),
+                    );
+                  }
+                },
               ),
-              otherAccountsPictures: <Widget>[
-                ListView.builder(
-                  itemBuilder: (BuildContext context, int index){
-                    if(index > 0 && index < this.widget.parent.users.length)
-                      {
-                        return _buildRow(this.widget.parent.users[index]);
-                      }
-                  }),
-          ],
+            ),
           ),
           new ListTile(
             leading: Icon(Icons.calendar_today),
@@ -106,13 +96,18 @@ class UserDrawerState extends State<UserDrawer> {
           new ListTile(
             leading: Icon(Icons.settings),
             title: Text('Manage accounts'),
+            onTap: () {
+              setState(() {
+                _manageAccounts();
+              });
+            },
           )
         ],
       ),
     );
   }
 
-  Future<void> _promptChangeUserName() async {
+  Future<void> _promptChangeUserName(int userID) async {
     switch (await showDialog<DialogOptions>(
         context: context,
         builder: (BuildContext context) {
@@ -127,7 +122,7 @@ class UserDrawerState extends State<UserDrawer> {
                   textCapitalization: TextCapitalization.words,
                   onSubmitted: (text) {
                     setState(() {
-                      saveStringToSharedPreferences(defaultUserKey, text);
+                      saveStringToSharedPreferences(this.widget.parent.userKey + 'name $userID', text);
                       Navigator.pop(context);
                     });
                   },
@@ -155,28 +150,35 @@ class UserDrawerState extends State<UserDrawer> {
           );
         })) {
       case DialogOptions.CANCEL:
-      // Let's go.
-      // ...
+        // Let's go.
+        // ...
         break;
       case DialogOptions.OK:
         setState(() {
-          accountName = nameController.text;
-          saveStringToSharedPreferences(defaultUserKey, accountName);
+          this.widget.parent.setState(() {
+            accountName = nameController.text;
+
+            this.widget.parent.users[userID].name =
+                accountName;
+
+            saveUserAccount(
+                this.widget.parent.userKey, userID,
+                this.widget.parent.users[userID]);
+          });
         }); // ...
         break;
     }
   }
 
-  void addAccount() { // TODO: add circle avatar on add account instead of replace default
-    //TODO: manage accounts (view and delete)
-    // prompt user to enter name
+  void addAccount() {
+    // TODO: add circle avatar on add account instead of replace default
+
     setState(() {
-      _promptChangeUserName();
+      _promptChangeUserName(this.widget.parent.users.length);
 
       // create new user
-      User newUser = new User(
-          this.widget.parent.users.length, accountName, accountName[0],
-          new List<Entry>());
+      User newUser = new User(this.widget.parent.users.length, accountName,
+          accountName[0], new List<Entry>());
 
       // add user to users list
       this.widget.parent.users.add(newUser);
@@ -184,7 +186,7 @@ class UserDrawerState extends State<UserDrawer> {
       // increment the number of users by users.length
       this.widget.parent.numberOfUsers = this.widget.parent.users.length;
 
-      // save numberOfUSers to Shared Preferences
+      // save numberOfUsers to Shared Preferences
       saveIntToSharedPreferences(this.widget.parent.numberOfUsersKey,
           this.widget.parent.numberOfUsers);
 
@@ -195,13 +197,136 @@ class UserDrawerState extends State<UserDrawer> {
       saveIntToSharedPreferences(
           this.widget.parent.currentUserKey, this.widget.parent.currentUser);
 
+      // clear name field
+      nameController.clear();
+
       // add account photos in drawer
     });
   }
 
-  Widget _buildRow(User user) {
-    return new CircleAvatar(
-        child: Text(user.avatar),
-      );
+  Future<void> _manageAccounts() async {
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text('Manage accounts'),
+            children: <Widget>[
+                ListTile(
+                  title: Text('Click on an account to rename. Or click the X to delete.'),
+                ),
+              Container(
+                width: 100.0,
+                height: 300.0,
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: this.widget.parent.users.length,
+                    itemBuilder: (BuildContext context, int index){
+                        return new ListTile(
+                          title: new FutureBuilder(
+                              future: restoreStringFromSharedPreferences(this.widget.parent.userKey + 'name $index'),
+                              builder: (BuildContext context, AsyncSnapshot<String> snapshot){
+                                if(snapshot.data == null)
+                                  {
+                                    return new Text('Default User');
+                                  }
+                                  else
+                                    {
+                                      return new Text(snapshot.data);
+                                    }
+                              },
+                          ),
+
+                          onTap: (){
+                            setState(() {
+                              saveIntToSharedPreferences(this.widget.parent.currentUserKey, index);
+
+                              Navigator.of(context)
+                                  .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+                            });
+                          },
+
+                          onLongPress: (){
+                            _promptChangeUserName(index);
+                          },
+
+                          trailing: GestureDetector(
+                            child: Icon(Icons.cancel),
+                            onTap: (){
+                              String userName = ' ';
+                              restoreStringFromSharedPreferences(this.widget.parent.userKey + 'name $index').then((name){
+                                userName = name;
+                              });
+
+                              showDialog<void>(
+                                context: context,
+                                barrierDismissible: false, // user must tap button!
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Delete User'),
+                                    content: SingleChildScrollView(
+                                      child: ListBody(
+                                        children: <Widget>[
+                                          Text('Are you sure you wish to delete the user ' + userName + '?'),
+                                          Text('This will delete ALL user data. This action CANNOT be undone.'),
+                                        ],
+                                      ),
+                                    ),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                        child: Text('CANCEL',
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                      FlatButton(
+                                        child: Text('DELETE',
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            this.widget.parent.setState((){
+                                              this.widget.parent.users.removeAt(index);
+                                              for (int i = 0; i < this.widget.parent.users.length; i++)   // resets the user id's to the index in the array
+                                                {
+                                                  this.widget.parent.users[i].id = i;
+
+                                                  //clearSharedPreferences(this.widget.parent.userKey);
+                                                  saveUserAccount(this.widget.parent.userKey, i, this.widget.parent.users[i]);
+
+                                                  // updates the number of users by users.length
+                                                  this.widget.parent.numberOfUsers = this.widget.parent.users.length;
+
+                                                  // save numberOfUsers to Shared Preferences
+                                                  saveIntToSharedPreferences(this.widget.parent.numberOfUsersKey,
+                                                      this.widget.parent.numberOfUsers);
+
+                                                  // change currentUser
+                                                  this.widget.parent.currentUser = 0;
+
+                                                  // save currentUser to Shared Preferences
+                                                  saveIntToSharedPreferences(
+                                                      this.widget.parent.currentUserKey, 0);
+
+                                                }
+                                              Navigator.of(context)
+                                                  .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+                                            });
+                                          });
+
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        );
+                    }),
+              ),
+            ],
+          );
+        });
   }
 }

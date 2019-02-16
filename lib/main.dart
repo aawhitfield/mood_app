@@ -151,7 +151,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     //*************************************************************
     // Restores all user accounts from Shared Preferences
     restoreIntFromSharedPreferences(numberOfUsersKey).then((numUsers){
-      print(numUsers);
       if(numUsers == null) {
         numberOfUsers = 1;
 
@@ -162,7 +161,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
         for (var i = 0; i < numberOfUsers; i++){
           int id = i;
-          String name = ' ';
+          String name = 'BOb ';
           String avatar = name[0];
           List<Entry> journal = new List();
 
@@ -198,17 +197,18 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
                     });
                   }
+                User user = new User(id, name, avatar, journal);
+                if(id == 0)
+                {
+                  users[0] = user;
+                }
+                else{
+                  users.add(user);
+                }
+
               });
             }
           });
-          User user = new User(id, name, avatar, journal);
-          if(id == 0)
-          {
-            users[0] = user;
-          }
-          else{
-            users.add(user);
-          }
         }
     });
 
@@ -225,6 +225,8 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
       });
     });
+
+
 
 
 
@@ -359,11 +361,12 @@ Entry test = new Entry(testTime, '', testString, EntryType.meal);
       List<String> tempList = todaysEmotions.toList();
       newEntry = Entry(now, notesText, tempList, EntryType.mood);
       users[currentUser].journal.insert(0,newEntry);
-      User user = new User(currentUser, currentUserName, currentUserName[0], users[currentUser].journal);
+      User user = new User(currentUser, users[currentUser].name, users[currentUser].name[0], users[currentUser].journal);
       saveUserAccount(userKey, currentUser, user);
       todaysEmotions.clear();
       notesController.clear();
-      Navigator.pop(context);
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
     });
   }
 }

@@ -124,7 +124,9 @@ class MealsWidgetState extends State<MealsWidget> {
           // saves whole journal with new entry and entire user account to SharedPreferences library
 
           saveUserAccount(this.widget.parent.userKey, this.widget.parent.currentUser, new User(
-              this.widget.parent.currentUser, this.widget.parent.currentUserName, this.widget.parent.currentUserName[0], this.widget.parent.users[this.widget.parent.currentUser].journal));
+              this.widget.parent.currentUser, this.widget.parent.users[this.widget.parent.currentUser].name,
+              this.widget.parent.users[this.widget.parent.currentUser].name[0],
+              this.widget.parent.users[this.widget.parent.currentUser].journal));
 
           mealAsAList.clear();                                                  // clears the list containing the selectedMeal so it can be reused in the future
           notesController.clear();                                              // clears the user notes section so it can be reused in the future
