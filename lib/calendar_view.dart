@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'entry.dart';
-import 'format_date_time.dart';
+import 'package:mood_app/backend/entry.dart';
+import 'package:mood_app/backend/format_date_time.dart';
 import 'package:flutter/scheduler.dart';
 // TODO: Show only the Calendar for a given month with a view to select previous/next month
 class CalendarView extends StatefulWidget {

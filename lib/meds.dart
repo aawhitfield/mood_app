@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'format_date_time.dart';
+import 'package:mood_app/backend/format_date_time.dart';
 import 'main.dart';
-import 'entry.dart';
-import 'save.dart';
-import 'retrieve.dart';
+import 'package:mood_app/backend/entry.dart';
+import 'package:mood_app/backend/save.dart';
+import 'package:mood_app/backend/retrieve.dart';
+import 'package:mood_app/backend/user.dart';
 
 class MedsWidget extends StatefulWidget {
   final MyHomePageState parent;
@@ -261,15 +262,20 @@ class MedsWidgetState extends State<MedsWidget> {
             new Entry(combinedDateTime, eventNotes, medAsAList, EntryType.med);
         // creates a new Entry with all of the information the user has selected.
 
-        this.widget.parent.journal.insert(0,
+        this.widget.parent.users[this.widget.parent.currentUser].journal.insert(0,
             newEntry); // adds the new Entry into the global journal to show up in Calendar View at the beginning of the list
 
-        saveListOfObjectsToSharedPreferences(
-            this.widget.parent.journalKey,
-            this
-                .widget
-                .parent
-                .journal); // saves whole journal with new entry to SharedPreferences library
+//        saveListOfObjectsToSharedPreferences(
+//            this.widget.parent.journalKey,
+//            this
+//                .widget
+//                .parent
+//                .journal); // saves whole journal with new entry to SharedPreferences library
+
+        saveUserAccount(this.widget.parent.userKey, this.widget.parent.currentUser, new User(
+            this.widget.parent.currentUser, this.widget.parent.users[this.widget.parent.currentUser].name,
+            this.widget.parent.users[this.widget.parent.currentUser].name[0],
+            this.widget.parent.users[this.widget.parent.currentUser].journal));
 
         medAsAList
             .clear(); // clears the list containing the medicine so it can be reused in the future

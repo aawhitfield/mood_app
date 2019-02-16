@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart'; // all of the widgets needed for Flutter
 import 'main.dart'; // all of the language packages for Dart
-import 'mealClass.dart'; // access the enum and objects for the Meal Class
+import 'package:mood_app/backend/mealClass.dart'; // access the enum and objects for the Meal Class
 import 'package:recase/recase.dart'; // able to change lowercase text -> title case for button labels
-import 'format_date_time.dart';                                                 // able to format strings from DateTime objects in human readable format
-import 'entry.dart';                                                            // able to work with the Entry class
-import 'save.dart';                                                             // enables saving the List<Objects> to SharedPreferences
+import 'package:mood_app/backend/format_date_time.dart';                                                 // able to format strings from DateTime objects in human readable format
+import 'package:mood_app/backend/entry.dart';                                                            // able to work with the Entry class
+import 'package:mood_app/backend/save.dart';                                                             // enables saving the List<Objects> to SharedPreferences
+import 'package:mood_app/backend/user.dart';
 
 class MealsWidget extends StatefulWidget {
   final MyHomePageState parent;
@@ -117,10 +118,15 @@ class MealsWidgetState extends State<MealsWidget> {
           Entry newEntry = new Entry(combinedDateTime, eventNotes, mealAsAList, EntryType.meal);
                                                                                 // creates a new Entry with all of the information the user has selected.
 
-          this.widget.parent.journal.insert(0,newEntry);                        // adds the new Entry into the global journal to show up in Calendar View
+          this.widget.parent.users[this.widget.parent.currentUser].journal.insert(0,newEntry);                        // adds the new Entry into the global journal to show up in Calendar View
 
-          saveListOfObjectsToSharedPreferences(this.widget.parent.journalKey,
-              this.widget.parent.journal); // saves whole journal with new entry to SharedPreferences library
+
+          // saves whole journal with new entry and entire user account to SharedPreferences library
+
+          saveUserAccount(this.widget.parent.userKey, this.widget.parent.currentUser, new User(
+              this.widget.parent.currentUser, this.widget.parent.users[this.widget.parent.currentUser].name,
+              this.widget.parent.users[this.widget.parent.currentUser].name[0],
+              this.widget.parent.users[this.widget.parent.currentUser].journal));
 
           mealAsAList.clear();                                                  // clears the list containing the selectedMeal so it can be reused in the future
           notesController.clear();                                              // clears the user notes section so it can be reused in the future

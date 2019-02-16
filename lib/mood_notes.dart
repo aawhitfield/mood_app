@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
-import 'format_date_time.dart';
+import 'package:mood_app/backend/format_date_time.dart';
 
 class MoodNotesDialog extends StatefulWidget                                    // creates a custom stateful widget for the Mood notes popup dialog
 {
