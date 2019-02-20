@@ -85,13 +85,7 @@ class UserDrawerState extends State<UserDrawer> {
             ),
           ),
 
-          new ListTile(
-            leading: Icon(Icons.calendar_today),
-            title: Text('Calendar View'),
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-          ),
+
           new ListTile(
             leading: Icon(Icons.add),
             title: Text('Add account'),
@@ -214,14 +208,24 @@ class UserDrawerState extends State<UserDrawer> {
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
-            title: const Text('Manage accounts'),
+            titlePadding: EdgeInsets.all(0.0),
+            title: Container(
+              padding: EdgeInsets.all(16.0),
+              color: Theme.of(context).primaryColor,
+              child: Text('Manage accounts',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
             children: <Widget>[
                 ListTile(
-                  title: Text('Click on an account to rename. Or click the X to delete.'),
+                  title: Text('Click on an account to select. Long press to rename. Or click the X to delete.'),
                 ),
+              Divider(),
               Container(
                 width: 100.0,
-                height: 300.0,
+                height: 250.0,
                 child: ListView.builder(
                   scrollDirection: Axis.vertical,
                     shrinkWrap: true,
@@ -268,7 +272,17 @@ class UserDrawerState extends State<UserDrawer> {
                                 barrierDismissible: false, // user must tap button!
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    title: Text('Delete User'),
+                                    titlePadding: EdgeInsets.all(0.0),
+                                    title: Container(
+                                        padding: EdgeInsets.all(16.0),
+                                        margin: EdgeInsets.all(0.0),
+                                        child: Text('Delete User',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        color: Colors.red,
+                                    ),
                                     content: SingleChildScrollView(
                                       child: ListBody(
                                         children: <Widget>[
@@ -280,6 +294,9 @@ class UserDrawerState extends State<UserDrawer> {
                                     actions: <Widget>[
                                       FlatButton(
                                         child: Text('CANCEL',
+                                          style: TextStyle(
+                                            color: Colors.grey[700],
+                                          ),
                                         ),
                                         onPressed: () {
                                           Navigator.of(context).pop();
@@ -287,6 +304,9 @@ class UserDrawerState extends State<UserDrawer> {
                                       ),
                                       FlatButton(
                                         child: Text('DELETE',
+                                          style: TextStyle(
+                                            color: Colors.red,
+                                          ),
                                         ),
                                         onPressed: () {
                                           setState(() {

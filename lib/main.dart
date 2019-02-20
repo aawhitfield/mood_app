@@ -162,7 +162,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
         for (var i = 0; i < numberOfUsers; i++){
           int id = i;
-          String name = 'BOb ';
+          String name = 'Tap to enter name';
           String avatar = name[0];
           List<Entry> journal = new List();
 
