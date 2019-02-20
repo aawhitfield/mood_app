@@ -44,7 +44,7 @@ class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Tracker App',
+      title: 'EmojiTrack+',
       theme: blueTheme,
       routes: <String, WidgetBuilder>{
         '/home': (BuildContext context) => new MyHomePage(title: 'EmojiTrack+'),
