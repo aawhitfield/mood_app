@@ -83,7 +83,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   DateTime now; // the current DateTime reported from the OS
   Entry newEntry; // new entry to the journal to be displayed in Calendar mode
   //List<Entry> journal = <Entry>[]; // the list of all journal entries
-  List<User> users = <User>[new User(0, 'Default Name', ' ', <Entry>[])];
+  List<User> users = <User>[new User(0, 'Tap to Enter Name', ' ', <Entry>[])];
   int currentUser = 0;            // the position the currentUser is in the User array
   String currentUserName = 'Default Name';
 
@@ -314,7 +314,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
 Entry test = new Entry(testTime, '', testString, EntryType.meal);
 
-
+print(users[0].name);
 
     return Scaffold(
       appBar: AppBar(
@@ -337,8 +337,9 @@ Entry test = new Entry(testTime, '', testString, EntryType.meal);
         ],
       ),
       body: CalendarView(
-          entries:
-              users[currentUser].journal),
+          entries: users.isEmpty
+              ? null
+              : users[currentUser].journal),
       key: scaffoldKey,
 
 
