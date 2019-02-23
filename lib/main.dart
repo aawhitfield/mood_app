@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:mood_app/menu/developer.dart';
 import 'mood_notes.dart';
 import 'calendar_view.dart';
 import 'package:mood_app/backend/entry.dart';
@@ -133,6 +134,14 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 ),
             );
             break;
+      case 'Meet the Developer'
+        : Navigator.push(
+            context,
+            new MaterialPageRoute(
+              builder: (BuildContext context) => DeveloperPage(),
+            ),
+          );
+          break;
       default
           : print('Unknown');
           break;
@@ -313,8 +322,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     List<String> testString = [''];
 
 Entry test = new Entry(testTime, '', testString, EntryType.meal);
-
-print(users[0].name);
 
     return Scaffold(
       appBar: AppBar(
