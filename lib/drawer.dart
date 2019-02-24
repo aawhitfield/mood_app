@@ -49,7 +49,7 @@ class UserDrawerState extends State<UserDrawer> {
                         .users[this.widget.parent.currentUser]
                         .name; // Text to display fot the default user account until a user name has been entered
                     if (snapshot.data == null) {
-                      return new Text('Tap to enter name');
+                      return new Text('Tap to Enter Name');
                     } else {
                       return new Text('${snapshot.data}');
                     }
@@ -312,28 +312,44 @@ class UserDrawerState extends State<UserDrawer> {
                                           setState(() {
                                             this.widget.parent.setState((){
                                               this.widget.parent.users.removeAt(index);
-                                              for (int i = 0; i < this.widget.parent.users.length; i++)   // resets the user id's to the index in the array
-                                                {
-                                                  this.widget.parent.users[i].id = i;
+                                              if (this.widget.parent.users.length == 0)
+                                              {
+                                                this.widget.parent.users.clear();
+                                                clearSharedPreferences(this.widget.parent.userKey);
+                                                clearSharedPreferences(this.widget.parent.userKey + 'id 0');
+                                                clearSharedPreferences(this.widget.parent.userKey + 'name 0');
+                                                clearSharedPreferences(this.widget.parent.userKey + 'avatar 0');
+                                                clearSharedPreferences(this.widget.parent.userKey + 'journal 0');
+                                                this.widget.parent.users.add(new User(0, 'Tap to Enter Name', ' ', <Entry>[]));
+                                                saveUserAccount(this.widget.parent.userKey, 0, this.widget.parent.users[0]);
+                                                this.widget.parent.currentUser = 0;
+                                              }
+                                              else{                                              {
+                                                  for (int i = 0; i < this.widget.parent.users.length; i++)   // resets the user id's to the index in the array
+                                                      {
+                                                    this.widget.parent.users[i].id = i;
 
-                                                  //clearSharedPreferences(this.widget.parent.userKey);
-                                                  saveUserAccount(this.widget.parent.userKey, i, this.widget.parent.users[i]);
+                                                    //clearSharedPreferences(this.widget.parent.userKey);
+                                                    saveUserAccount(this.widget.parent.userKey, i, this.widget.parent.users[i]);
 
-                                                  // updates the number of users by users.length
-                                                  this.widget.parent.numberOfUsers = this.widget.parent.users.length;
+                                                    // updates the number of users by users.length
+                                                    this.widget.parent.numberOfUsers = this.widget.parent.users.length;
 
-                                                  // save numberOfUsers to Shared Preferences
-                                                  saveIntToSharedPreferences(this.widget.parent.numberOfUsersKey,
-                                                      this.widget.parent.numberOfUsers);
+                                                    // save numberOfUsers to Shared Preferences
+                                                    saveIntToSharedPreferences(this.widget.parent.numberOfUsersKey,
+                                                        this.widget.parent.numberOfUsers);
 
-                                                  // change currentUser
-                                                  this.widget.parent.currentUser = 0;
+                                                    // change currentUser
+                                                    this.widget.parent.currentUser = 0;
 
-                                                  // save currentUser to Shared Preferences
-                                                  saveIntToSharedPreferences(
-                                                      this.widget.parent.currentUserKey, 0);
+                                                    // save currentUser to Shared Preferences
+                                                    saveIntToSharedPreferences(
+                                                        this.widget.parent.currentUserKey, 0);
 
+                                                  }
                                                 }
+                                              }
+                                              print('before close: ' + this.widget.parent.users[0].name);
                                               Navigator.of(context)
                                                   .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
                                             });

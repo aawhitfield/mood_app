@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:mood_app/menu/developer.dart';
 import 'mood_notes.dart';
 import 'calendar_view.dart';
 import 'package:mood_app/backend/entry.dart';
@@ -83,7 +84,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   DateTime now; // the current DateTime reported from the OS
   Entry newEntry; // new entry to the journal to be displayed in Calendar mode
   //List<Entry> journal = <Entry>[]; // the list of all journal entries
-  List<User> users = <User>[new User(0, 'Default Name', ' ', <Entry>[])];
+  List<User> users = <User>[new User(0, 'Tap to Enter Name', ' ', <Entry>[])];
   int currentUser = 0;            // the position the currentUser is in the User array
   String currentUserName = 'Default Name';
 
@@ -133,6 +134,14 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 ),
             );
             break;
+      case 'Meet the Developer'
+        : Navigator.push(
+            context,
+            new MaterialPageRoute(
+              builder: (BuildContext context) => DeveloperPage(),
+            ),
+          );
+          break;
       default
           : print('Unknown');
           break;
@@ -314,8 +323,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
 Entry test = new Entry(testTime, '', testString, EntryType.meal);
 
-
-
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -337,8 +344,9 @@ Entry test = new Entry(testTime, '', testString, EntryType.meal);
         ],
       ),
       body: CalendarView(
-          entries:
-              users[currentUser].journal),
+          entries: users.isEmpty
+              ? null
+              : users[currentUser].journal),
       key: scaffoldKey,
 
 
