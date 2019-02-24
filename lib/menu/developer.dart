@@ -79,61 +79,87 @@ class _DeveloperPageState extends State<DeveloperPage> {
   _renderInapps() {
     List<Widget> widgets = this
         ._items
-        .map((item) => Container(
-              margin: EdgeInsets.symmetric(vertical: 10.0),
+        .map((item) => Center(
               child: Container(
-                child: Column(
-                  children: <Widget>[
-                    Card(
-                      child: Column(
-                        children: <Widget>[
-                          Stack(
-                            alignment: Alignment.center,
-                            children: <Widget>[
-                              Container(
-                                color: Theme.of(context).primaryColor,
-                                height: 300,
-                              ),
-                              Column(
-                                children: <Widget>[
-                                  CircleAvatar(
-                                    radius: 64.0,
-                                    child: Icon(
-                                        Icons.account_circle,
-                                        size: 128.0,
+                alignment: Alignment.center,
+                margin: EdgeInsets.symmetric(vertical: 10.0),
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      Card(
+                        child: Column(
+                          children: <Widget>[
+                            Stack(
+                              alignment: Alignment.center,
+                              children: <Widget>[
+//                                Container(
+//                                  decoration: BoxDecoration(
+//                                    image: DecorationImage(
+//                                      image: AssetImage('graphics/laptop.jpg'),
+//                                    ),
+//                                  ),
+//
+//                                ),
+                                Image.asset('graphics/laptop.jpg',
+                                  scale: 0.5,
+                                ),
+                                Column(
+                                  children: <Widget>[
+                                    ClipOval(
+                                      child: Image(
+                                        image: AssetImage(
+                                            'graphics/developer.jpg'),
+                                        fit: BoxFit.fill,
+                                        width: 196.0,
+                                        height: 196.0,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(
-                                    height: 32.0,
-                                  ),
-                                  Text('Aaron Whitfield',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 28.0,
+                                    SizedBox(
+                                      height: 40.0,
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Text('Hello World'),
-                          FlatButton(
-                            color: Theme.of(context).primaryColor,
-                            onPressed: () {
-                              this._buyProduct(item);
-                            },
-                            child: Text(
-                              'Add a ${item.localizedPrice} tip my tip jar.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
+                                    Text(
+                                      'Aaron Whitfield',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 28.0,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text(
+                                  'I\'m a freelance mobile app developer with a wonderful wife and 3 adorable children and am just trying to make the world a better place. If you have found any value in this ad-free, fully functional app, please consider letting me know by tipping below.',
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  fontFamily: 'RobotoLight',
+                                  color: Colors.grey[700],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                            FlatButton(
+                              color: Theme.of(context).primaryColor,
+                              onPressed: () {
+                                this._buyProduct(item);
+                              },
+                              child: Text(
+                                'Add ${item.localizedPrice} to my tip jar.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ))
@@ -147,26 +173,27 @@ class _DeveloperPageState extends State<DeveloperPage> {
       appBar: AppBar(
         title: const Text('Meet the Developer'),
       ),
-      body: Container(
-        padding: EdgeInsets.all(10.0),
-        child: ListView(
-          children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  child: Text(
-                    'Running on: $_platformVersion\n',
-                    style: TextStyle(fontSize: 18.0),
+      body: Center(
+        child: Container(
+          alignment: Alignment.center,
+          padding: EdgeInsets.all(10.0),
+          child: ListView(
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: this._renderInapps(),
+                    ),
                   ),
-                ),
-                Column(
-                  children: this._renderInapps(),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
