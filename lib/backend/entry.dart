@@ -8,10 +8,10 @@ class Entry
 { // ASn entry on a person's mood. It records the data and time of the entry, user inputted noted, and a list of emotions selected by the user.
   DateTime eventTime;
   String eventNotes;
-  List<String> emotionList;
+  List<String> dataList;
   EntryType entryType;
 
-  Entry(this.eventTime, this.eventNotes, this.emotionList, this.entryType);                     // constructor
+  Entry(this.eventTime, this.eventNotes, this.dataList, this.entryType);                     // constructor
 
   Entry.fromJson(Map<String, dynamic> entry)                                    // custom decodes strings (e.g., from Shared Preferences back into an Entry object
   {
@@ -26,7 +26,7 @@ class Entry
 
     eventTime = DateTime.parse(entry['eventTime']);                             // uses built in DateTime parser for String -> DateTime
     eventNotes = entry['eventNotes'];
-    emotionList =  _toListString(entry['emotionList']);
+    dataList =  _toListString(entry['emotionList']);
     entryType = entryTypeStringToJSON(entry['entryType']);
 
 
@@ -37,7 +37,7 @@ class Entry
       {
         'eventTime': eventTime.toString(),
         'eventNotes': eventNotes,
-        'emotionList': emotionList.toString(),
+        'emotionList': dataList.toString(),
         'entryType': typeAsString(entryType),
       };
 

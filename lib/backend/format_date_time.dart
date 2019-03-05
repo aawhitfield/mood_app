@@ -198,6 +198,16 @@ String formatAbbreviatedDayWeekDateTime(DateTime dateTime)                      
   return formattedDateTime;
 }
 
+String formatAbbreviatedDayWeekMDY(DateTime dateTime)                                        // takes a DateTime object and formats it into user friendly format of DayOfWeek, Month, Day, Year ~ HH:MM AM/PM
+{
+
+  String formattedDateTime = '';
+
+  formattedDateTime = abbreviatedWeekday(dateTime) + ', ' + abbreviatedMonth(dateTime) + ' ${dateTime.day}, ${dateTime.year}';
+
+  return formattedDateTime;
+}
+
 
 String formatDateTime(DateTime dateTime)                                        // takes a DateTime object and formats it into user friendly format of DayOfWeek, Month, Day, Year ~ HH:MM AM/PM
 {
@@ -214,4 +224,9 @@ DateTime combineDateTime(DateTime dateTime, TimeOfDay timeOfDay){               
   DateTime combinedDateTime = new DateTime(dateTime.year, dateTime.month, dateTime.day, timeOfDay.hour, timeOfDay.minute);
 
   return combinedDateTime;
+}
+
+String splitOffTime(DateTime dateTime)                                          // takes a DateTime and returns only the time
+{
+  return formatHour(dateTime.hour) + ':' + formatMinutes(dateTime.minute) + ' ' + formatAMPM(dateTime.hour);
 }

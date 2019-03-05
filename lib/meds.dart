@@ -6,10 +6,15 @@ import 'package:mood_app/backend/save.dart';
 import 'package:mood_app/backend/retrieve.dart';
 import 'package:mood_app/backend/user.dart';
 
+// TODO: change + button to update
+// TODO: update calendar_view with edited med
+// TODO: apply med updates to meals and mood
+
 class MedsWidget extends StatefulWidget {
   final MyHomePageState parent;
+  final Entry _entry;
 
-  MedsWidget(this.parent);
+  MedsWidget(this.parent, this._entry);
 
   @override
   MedsWidgetState createState() {
@@ -30,8 +35,8 @@ class MedsWidgetState extends State<MedsWidget> {
       'medKey'; // key for storing and retrieving medicine lists to/from Shared Preferences
   final String medNameKey =
       'medNameKey'; // key for storing / retrieving the last medicine name that was selected to make it faster for user to reuse common medicine
-  TextEditingController
-      notesController; // access text of notes to pass to journal entry
+  var notesController =
+      new TextEditingController(); // access text of notes to pass to journal entry
   String notes = ''; // medicine notes
 
   Future<Null> _selectDate(BuildContext context) async {
@@ -113,26 +118,25 @@ class MedsWidgetState extends State<MedsWidget> {
         children: <Widget>[
           ListTile(
             leading: Icon(Icons.local_pharmacy),
+            title: widget._entry != null
+                ? new Text(widget._entry.dataList[0])
+                : new FutureBuilder(
+                    future: restoreStringFromSharedPreferences(medNameKey),
 
-            //title: Text(medicineName),
+                    // a Future<String> or null
 
-            title: new FutureBuilder(
-              future: restoreStringFromSharedPreferences(medNameKey),
+                    builder:
+                        (BuildContext context, AsyncSnapshot<String> snapshot) {
+                      medicineName = snapshot.data;
 
-              // a Future<String> or null
-
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                medicineName = snapshot.data;
-
-                if (snapshot.hasError)
-                  return new Text('Error: ${snapshot.error}');
-                else if (snapshot.data == null) {
-                  return new Text('Medicine Name');
-                } else
-                  return new Text('${snapshot.data}');
-              },
-            ),
-
+                      if (snapshot.hasError)
+                        return new Text('Error: ${snapshot.error}');
+                      else if (snapshot.data == null) {
+                        return new Text('Medicine Name');
+                      } else
+                        return new Text('${snapshot.data}');
+                    },
+                  ),
             onTap: () {
               _selectMed(); // lets user change the name of the medicine for the journal entry
             },
@@ -140,7 +144,9 @@ class MedsWidgetState extends State<MedsWidget> {
           Divider(),
           ListTile(
             leading: Icon(Icons.access_time),
-            title: Text(dateString),
+            title: widget._entry != null
+                ? Text(formatAbbreviatedDayWeekMDY(widget._entry.eventTime))
+                : Text(dateString),
             onTap: () {
               _selectDate(context);
             },
@@ -148,7 +154,9 @@ class MedsWidgetState extends State<MedsWidget> {
               onTap: () {
                 _selectTime(context);
               },
-              child: Text(_timeString),
+              child: widget._entry != null
+                  ? Text(splitOffTime(widget._entry.eventTime))
+                  : Text(_timeString),
             ),
           ),
           Divider(),
@@ -216,10 +224,12 @@ class MedsWidgetState extends State<MedsWidget> {
                 ),
               ),
               ListTile(
-                title: Text('Previously Entered',
+                title: Text(
+                  'Previously Entered',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                  ),),
+                  ),
+                ),
               ),
               Divider(),
               Expanded(
@@ -262,7 +272,8 @@ class MedsWidgetState extends State<MedsWidget> {
             new Entry(combinedDateTime, eventNotes, medAsAList, EntryType.med);
         // creates a new Entry with all of the information the user has selected.
 
-        this.widget.parent.users[this.widget.parent.currentUser].journal.insert(0,
+        this.widget.parent.users[this.widget.parent.currentUser].journal.insert(
+            0,
             newEntry); // adds the new Entry into the global journal to show up in Calendar View at the beginning of the list
 
 //        saveListOfObjectsToSharedPreferences(
@@ -272,14 +283,25 @@ class MedsWidgetState extends State<MedsWidget> {
 //                .parent
 //                .journal); // saves whole journal with new entry to SharedPreferences library
 
-        saveUserAccount(this.widget.parent.userKey, this.widget.parent.currentUser, new User(
-            this.widget.parent.currentUser, this.widget.parent.users[this.widget.parent.currentUser].name,
-            this.widget.parent.users[this.widget.parent.currentUser].name[0],
-            this.widget.parent.users[this.widget.parent.currentUser].journal));
+        saveUserAccount(
+            this.widget.parent.userKey,
+            this.widget.parent.currentUser,
+            new User(
+                this.widget.parent.currentUser,
+                this.widget.parent.users[this.widget.parent.currentUser].name,
+                this
+                    .widget
+                    .parent
+                    .users[this.widget.parent.currentUser]
+                    .name[0],
+                this
+                    .widget
+                    .parent
+                    .users[this.widget.parent.currentUser]
+                    .journal));
 
         medAsAList
             .clear(); // clears the list containing the medicine so it can be reused in the future
-
 
         Navigator.of(context)
             .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
@@ -293,6 +315,9 @@ class MedsWidgetState extends State<MedsWidget> {
     super.initState();
 
     setState(() {
+      if (widget._entry != null && widget._entry.eventNotes != null) {
+        notesController.text = '${widget._entry.eventNotes}';
+      }
       restoreListStringFromSharedPreferences(medKey).then((value) {
         value.forEach((entry) {
           medicineList.add(entry);
