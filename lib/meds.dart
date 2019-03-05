@@ -102,12 +102,17 @@ class MedsWidgetState extends State<MedsWidget> {
         ),
         actions: <Widget>[
           IconButton(
-            icon: Icon(
-              Icons.add,
-              color: Colors.white,
-            ),
+            icon: widget._entry != null
+                ? Text('Update',
+                    style: TextStyle(
+                      fontSize: 10.0,
+                    ),)
+                : Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
             onPressed: () {
-              addMedRecord(notes);
+              addMedRecord(notesController.text);
             },
           )
           // adds medicine entry to the journal
@@ -255,7 +260,7 @@ class MedsWidgetState extends State<MedsWidget> {
           ),
         ));
   }
-
+// TODO: save text labels on edit meds as data and add to calendar view
   void addMedRecord(String eventNotes) {
     // adds the med record to the general Journal, saves it to Shared Preferences for permanent storage
     setState(() {
@@ -276,12 +281,7 @@ class MedsWidgetState extends State<MedsWidget> {
             0,
             newEntry); // adds the new Entry into the global journal to show up in Calendar View at the beginning of the list
 
-//        saveListOfObjectsToSharedPreferences(
-//            this.widget.parent.journalKey,
-//            this
-//                .widget
-//                .parent
-//                .journal); // saves whole journal with new entry to SharedPreferences library
+
 
         saveUserAccount(
             this.widget.parent.userKey,
