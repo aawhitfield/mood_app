@@ -38,6 +38,7 @@ class MedsWidgetState extends State<MedsWidget> {
   var notesController =
       new TextEditingController(); // access text of notes to pass to journal entry
   String notes = ''; // medicine notes
+  bool _nameEdited = false;
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -89,6 +90,7 @@ class MedsWidgetState extends State<MedsWidget> {
         formatAMPM(_time.hour);
     // the string to use to display to the user the desired time for the med record
 
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -123,9 +125,9 @@ class MedsWidgetState extends State<MedsWidget> {
         children: <Widget>[
           ListTile(
             leading: Icon(Icons.local_pharmacy),
-            title: widget._entry != null
-                ? new Text(widget._entry.dataList[0])
-                : new FutureBuilder(
+            title:// widget._entry != null
+//                //? new Text(widget._entry.dataList[0])
+                 new FutureBuilder(
                     future: restoreStringFromSharedPreferences(medNameKey),
 
                     // a Future<String> or null
@@ -133,8 +135,10 @@ class MedsWidgetState extends State<MedsWidget> {
                     builder:
                         (BuildContext context, AsyncSnapshot<String> snapshot) {
                       medicineName = snapshot.data;
-
-                      if (snapshot.hasError)
+                      if (!_nameEdited && widget._entry != null){
+                        return new Text(widget._entry.dataList[0]);
+                      }
+                      else if (snapshot.hasError)
                         return new Text('Error: ${snapshot.error}');
                       else if (snapshot.data == null) {
                         return new Text('Medicine Name');
@@ -158,7 +162,7 @@ class MedsWidgetState extends State<MedsWidget> {
             trailing: GestureDetector(
               onTap: () {
                 _selectTime(context);
-              },
+              }, // TODO: DO FIRST: Fix date/time on update not showing if try to change/edit journal entry value with Date/Time picker. See med name for example how to fix.
               child: widget._entry != null
                   ? Text(splitOffTime(widget._entry.eventTime))
                   : Text(_timeString),
@@ -223,6 +227,7 @@ class MedsWidgetState extends State<MedsWidget> {
                           medicineName); // adds user entry to a list to save for quick re-selection
                       saveStringToSharedPreferences(medNameKey, medicineName);
                       saveListStringToSharedPreferences(medKey, medicineList);
+                      _nameEdited = true;
                       Navigator.pop(context);
                     });
                   },
@@ -264,50 +269,54 @@ class MedsWidgetState extends State<MedsWidget> {
   void addMedRecord(String eventNotes) {
     // adds the med record to the general Journal, saves it to Shared Preferences for permanent storage
     setState(() {
-      this.widget.parent.setState(() {
-        // updates UI in this widget/class/file as well as in main.dart
-        List<String> medAsAList = <
-            String>[]; // place to store the med type as List to satisfy the requirements of the Entry Class
-        medAsAList.add(
-            medicineName); // adds the medicine name to the medAsList to meet requirements of the Entry Class parameter type
+      this.widget.parent.setState(() {// updates UI in this widget/class/file as well as in main.dart
 
-        DateTime combinedDateTime = combineDateTime(_date,
-            _time); // combines the date from the Date Picker and the time from the TimePicker
-        Entry newEntry =
-            new Entry(combinedDateTime, eventNotes, medAsAList, EntryType.med);
-        // creates a new Entry with all of the information the user has selected.
+      print('medicine name: $medicineName');
+      List<String> medAsAList = <
+          String>[
+      ]; // place to store the med type as List to satisfy the requirements of the Entry Class
+      medAsAList.add(
+          medicineName); // adds the medicine name to the medAsList to meet requirements of the Entry Class parameter type
 
-        this.widget.parent.users[this.widget.parent.currentUser].journal.insert(
-            0,
-            newEntry); // adds the new Entry into the global journal to show up in Calendar View at the beginning of the list
+      DateTime combinedDateTime = combineDateTime(_date,
+          _time); // combines the date from the Date Picker and the time from the TimePicker
+      print('combinedDateTime: $combinedDateTime');
+      print('eventNotes: $eventNotes');
+      print('medAsList: $medAsAList');
+      Entry newEntry =
+      new Entry(combinedDateTime, eventNotes, medAsAList, EntryType.med);
+      // creates a new Entry with all of the information the user has selected.
+
+      this.widget.parent.users[this.widget.parent.currentUser].journal.insert(
+          0,
+          newEntry); // adds the new Entry into the global journal to show up in Calendar View at the beginning of the list
 
 
+      saveUserAccount(
+          this.widget.parent.userKey,
+          this.widget.parent.currentUser,
+          new User(
+              this.widget.parent.currentUser,
+              this.widget.parent.users[this.widget.parent.currentUser].name,
+              this
+                  .widget
+                  .parent
+                  .users[this.widget.parent.currentUser]
+                  .name[0],
+              this
+                  .widget
+                  .parent
+                  .users[this.widget.parent.currentUser]
+                  .journal));
 
-        saveUserAccount(
-            this.widget.parent.userKey,
-            this.widget.parent.currentUser,
-            new User(
-                this.widget.parent.currentUser,
-                this.widget.parent.users[this.widget.parent.currentUser].name,
-                this
-                    .widget
-                    .parent
-                    .users[this.widget.parent.currentUser]
-                    .name[0],
-                this
-                    .widget
-                    .parent
-                    .users[this.widget.parent.currentUser]
-                    .journal));
+      medAsAList
+          .clear(); // clears the list containing the medicine so it can be reused in the future
 
-        medAsAList
-            .clear(); // clears the list containing the medicine so it can be reused in the future
-
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
-        // clears stack and returns to the Home screen
-      });
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+      // clears stack and returns to the Home screen
     });
+  });
   }
 
   @override
@@ -316,8 +325,12 @@ class MedsWidgetState extends State<MedsWidget> {
 
     setState(() {
       if (widget._entry != null && widget._entry.eventNotes != null) {
+        medicineName = widget._entry.dataList[0];
+        _date = widget._entry.eventTime;
+        _time = TimeOfDay.fromDateTime(widget._entry.eventTime);
         notesController.text = '${widget._entry.eventNotes}';
       }
+
       restoreListStringFromSharedPreferences(medKey).then((value) {
         value.forEach((entry) {
           medicineList.add(entry);

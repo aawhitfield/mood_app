@@ -346,7 +346,9 @@ Entry test = new Entry(testTime, '', testString, EntryType.meal);
       body: CalendarView(
           entries: users.isEmpty
               ? null
-              : users[currentUser].journal),
+              : users[currentUser].journal,
+          parent: this,
+      ),
       key: scaffoldKey,
 
 
