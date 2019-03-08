@@ -63,7 +63,7 @@ class AnimatedFloatingActionButtonState
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => MedsWidget(widget.parent, null),));
+                                          builder: (context) => MedsWidget(widget.parent, null, 0),));
                                 },
                                 child: new Center(
                                   child: new Icon(

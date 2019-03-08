@@ -40,7 +40,7 @@ class CalendarViewState extends State<CalendarView> {
             }
             final int index = i ~/ 2;
             if (index < widget.entries.length) {
-              return _buildRow(widget.entries[index]);
+              return _buildRow(widget.entries[index], index);
             }
           });
     }
@@ -51,7 +51,7 @@ class CalendarViewState extends State<CalendarView> {
     );
   }
 
-  Widget _buildRow(Entry entry) // builds the row in the ListView
+  Widget _buildRow(Entry entry, int index) // builds the row in the ListView
   {
     String formattedEmotionString = '';
     for (int i = 0;
@@ -69,7 +69,7 @@ class CalendarViewState extends State<CalendarView> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => MedsWidget(widget.parent, entry)),);
+              builder: (context) => MedsWidget(widget.parent, entry, index)),);
         },
         child: Row(
           mainAxisSize: MainAxisSize.max,

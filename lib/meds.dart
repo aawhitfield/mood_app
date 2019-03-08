@@ -13,8 +13,9 @@ import 'package:mood_app/backend/user.dart';
 class MedsWidget extends StatefulWidget {
   final MyHomePageState parent;
   final Entry _entry;
+  final int _index;
 
-  MedsWidget(this.parent, this._entry);
+  MedsWidget(this.parent, this._entry, this._index);
 
   @override
   MedsWidgetState createState() {
@@ -39,6 +40,8 @@ class MedsWidgetState extends State<MedsWidget> {
       new TextEditingController(); // access text of notes to pass to journal entry
   String notes = ''; // medicine notes
   bool _nameEdited = false;
+  bool _dateEdited = false;
+  bool _timeEdited = false;
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -55,6 +58,7 @@ class MedsWidgetState extends State<MedsWidget> {
         String _month = abbreviatedMonth(_date);
         dateString =
             _dayOfWeek + ', ' + _month + ' ${_date.day}, ${_date.year}';
+        _dateEdited = true;
       });
     }
   }
@@ -72,6 +76,7 @@ class MedsWidgetState extends State<MedsWidget> {
             formatMinutes(_time.minute) +
             ' ' +
             formatAMPM(_time.hour); // formats time to user friendly format
+        _timeEdited = true;
       });
     }
   }
@@ -126,7 +131,6 @@ class MedsWidgetState extends State<MedsWidget> {
           ListTile(
             leading: Icon(Icons.local_pharmacy),
             title:// widget._entry != null
-//                //? new Text(widget._entry.dataList[0])
                  new FutureBuilder(
                     future: restoreStringFromSharedPreferences(medNameKey),
 
@@ -153,7 +157,7 @@ class MedsWidgetState extends State<MedsWidget> {
           Divider(),
           ListTile(
             leading: Icon(Icons.access_time),
-            title: widget._entry != null
+            title: (widget._entry != null && !_dateEdited)
                 ? Text(formatAbbreviatedDayWeekMDY(widget._entry.eventTime))
                 : Text(dateString),
             onTap: () {
@@ -163,7 +167,7 @@ class MedsWidgetState extends State<MedsWidget> {
               onTap: () {
                 _selectTime(context);
               }, // TODO: DO FIRST: Fix date/time on update not showing if try to change/edit journal entry value with Date/Time picker. See med name for example how to fix.
-              child: widget._entry != null
+              child: (widget._entry != null && !_timeEdited)
                   ? Text(splitOffTime(widget._entry.eventTime))
                   : Text(_timeString),
             ),
@@ -265,13 +269,12 @@ class MedsWidgetState extends State<MedsWidget> {
           ),
         ));
   }
-// TODO: save text labels on edit meds as data and add to calendar view
+
   void addMedRecord(String eventNotes) {
     // adds the med record to the general Journal, saves it to Shared Preferences for permanent storage
     setState(() {
       this.widget.parent.setState(() {// updates UI in this widget/class/file as well as in main.dart
 
-      print('medicine name: $medicineName');
       List<String> medAsAList = <
           String>[
       ]; // place to store the med type as List to satisfy the requirements of the Entry Class
@@ -280,16 +283,21 @@ class MedsWidgetState extends State<MedsWidget> {
 
       DateTime combinedDateTime = combineDateTime(_date,
           _time); // combines the date from the Date Picker and the time from the TimePicker
-      print('combinedDateTime: $combinedDateTime');
-      print('eventNotes: $eventNotes');
-      print('medAsList: $medAsAList');
+
       Entry newEntry =
       new Entry(combinedDateTime, eventNotes, medAsAList, EntryType.med);
       // creates a new Entry with all of the information the user has selected.
 
-      this.widget.parent.users[this.widget.parent.currentUser].journal.insert(
-          0,
-          newEntry); // adds the new Entry into the global journal to show up in Calendar View at the beginning of the list
+      if(widget._entry == null)
+      {
+        this.widget.parent.users[this.widget.parent.currentUser].journal.insert(
+            0,
+            newEntry);
+      }// adds the new Entry into the global journal to show up in Calendar View at the beginning of the list
+      else
+        {
+          this.widget.parent.users[this.widget.parent.currentUser].journal[widget._index] = newEntry;
+        }
 
 
       saveUserAccount(
