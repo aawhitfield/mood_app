@@ -6,7 +6,7 @@ import 'package:mood_app/backend/format_date_time.dart';                        
 import 'package:mood_app/backend/entry.dart';                                                            // able to work with the Entry class
 import 'package:mood_app/backend/save.dart';                                                             // enables saving the List<Objects> to SharedPreferences
 import 'package:mood_app/backend/user.dart';
-
+// TODO: Be able to edit meals after added
 class MealsWidget extends StatefulWidget {
   final MyHomePageState parent;
 

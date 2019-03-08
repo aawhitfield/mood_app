@@ -7,7 +7,6 @@ import 'package:mood_app/backend/retrieve.dart';
 import 'package:mood_app/backend/user.dart';
 
 // TODO: change + button to update
-// TODO: update calendar_view with edited med
 // TODO: apply med updates to meals and mood
 
 class MedsWidget extends StatefulWidget {
@@ -95,12 +94,15 @@ class MedsWidgetState extends State<MedsWidget> {
         formatAMPM(_time.hour);
     // the string to use to display to the user the desired time for the med record
 
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Add New Med Entry', // app bar title that this medicine entry mode
-        ),
+        title: (widget._entry != null)
+            ? Text(
+                'Edit Med Entry', // app bar title that this medicine entry mode
+              )
+            : Text(
+                'Add New Med Entry', // app bar title that this medicine entry mode
+              ),
         leading: GestureDetector(
           child: Icon(Icons.clear), // X icon to cancel entry mode
           onTap: () {
@@ -110,10 +112,12 @@ class MedsWidgetState extends State<MedsWidget> {
         actions: <Widget>[
           IconButton(
             icon: widget._entry != null
-                ? Text('Update',
+                ? Text(
+                    'Update',
                     style: TextStyle(
                       fontSize: 10.0,
-                    ),)
+                    ),
+                  )
                 : Icon(
                     Icons.add,
                     color: Colors.white,
@@ -130,26 +134,24 @@ class MedsWidgetState extends State<MedsWidget> {
         children: <Widget>[
           ListTile(
             leading: Icon(Icons.local_pharmacy),
-            title:// widget._entry != null
-                 new FutureBuilder(
-                    future: restoreStringFromSharedPreferences(medNameKey),
+            title: // widget._entry != null
+                new FutureBuilder(
+              future: restoreStringFromSharedPreferences(medNameKey),
 
-                    // a Future<String> or null
+              // a Future<String> or null
 
-                    builder:
-                        (BuildContext context, AsyncSnapshot<String> snapshot) {
-                      medicineName = snapshot.data;
-                      if (!_nameEdited && widget._entry != null){
-                        return new Text(widget._entry.dataList[0]);
-                      }
-                      else if (snapshot.hasError)
-                        return new Text('Error: ${snapshot.error}');
-                      else if (snapshot.data == null) {
-                        return new Text('Medicine Name');
-                      } else
-                        return new Text('${snapshot.data}');
-                    },
-                  ),
+              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                medicineName = snapshot.data;
+                if (!_nameEdited && widget._entry != null) {
+                  return new Text(widget._entry.dataList[0]);
+                } else if (snapshot.hasError)
+                  return new Text('Error: ${snapshot.error}');
+                else if (snapshot.data == null) {
+                  return new Text('Medicine Name');
+                } else
+                  return new Text('${snapshot.data}');
+              },
+            ),
             onTap: () {
               _selectMed(); // lets user change the name of the medicine for the journal entry
             },
@@ -166,7 +168,7 @@ class MedsWidgetState extends State<MedsWidget> {
             trailing: GestureDetector(
               onTap: () {
                 _selectTime(context);
-              }, // TODO: DO FIRST: Fix date/time on update not showing if try to change/edit journal entry value with Date/Time picker. See med name for example how to fix.
+              },
               child: (widget._entry != null && !_timeEdited)
                   ? Text(splitOffTime(widget._entry.eventTime))
                   : Text(_timeString),
@@ -273,58 +275,62 @@ class MedsWidgetState extends State<MedsWidget> {
   void addMedRecord(String eventNotes) {
     // adds the med record to the general Journal, saves it to Shared Preferences for permanent storage
     setState(() {
-      this.widget.parent.setState(() {// updates UI in this widget/class/file as well as in main.dart
+      this.widget.parent.setState(() {
+        // updates UI in this widget/class/file as well as in main.dart
 
-      List<String> medAsAList = <
-          String>[
-      ]; // place to store the med type as List to satisfy the requirements of the Entry Class
-      medAsAList.add(
-          medicineName); // adds the medicine name to the medAsList to meet requirements of the Entry Class parameter type
+        List<String> medAsAList = <
+            String>[]; // place to store the med type as List to satisfy the requirements of the Entry Class
+        medAsAList.add(
+            medicineName); // adds the medicine name to the medAsList to meet requirements of the Entry Class parameter type
 
-      DateTime combinedDateTime = combineDateTime(_date,
-          _time); // combines the date from the Date Picker and the time from the TimePicker
+        DateTime combinedDateTime = combineDateTime(_date,
+            _time); // combines the date from the Date Picker and the time from the TimePicker
 
-      Entry newEntry =
-      new Entry(combinedDateTime, eventNotes, medAsAList, EntryType.med);
-      // creates a new Entry with all of the information the user has selected.
+        Entry newEntry =
+            new Entry(combinedDateTime, eventNotes, medAsAList, EntryType.med);
+        // creates a new Entry with all of the information the user has selected.
 
-      if(widget._entry == null)
-      {
-        this.widget.parent.users[this.widget.parent.currentUser].journal.insert(
-            0,
-            newEntry);
-      }// adds the new Entry into the global journal to show up in Calendar View at the beginning of the list
-      else
-        {
-          this.widget.parent.users[this.widget.parent.currentUser].journal[widget._index] = newEntry;
+        if (widget._entry == null) {
+          this
+              .widget
+              .parent
+              .users[this.widget.parent.currentUser]
+              .journal
+              .insert(0, newEntry);
+        } // adds the new Entry into the global journal to show up in Calendar View at the beginning of the list
+        else {
+          this
+              .widget
+              .parent
+              .users[this.widget.parent.currentUser]
+              .journal[widget._index] = newEntry;
         }
 
+        saveUserAccount(
+            this.widget.parent.userKey,
+            this.widget.parent.currentUser,
+            new User(
+                this.widget.parent.currentUser,
+                this.widget.parent.users[this.widget.parent.currentUser].name,
+                this
+                    .widget
+                    .parent
+                    .users[this.widget.parent.currentUser]
+                    .name[0],
+                this
+                    .widget
+                    .parent
+                    .users[this.widget.parent.currentUser]
+                    .journal));
 
-      saveUserAccount(
-          this.widget.parent.userKey,
-          this.widget.parent.currentUser,
-          new User(
-              this.widget.parent.currentUser,
-              this.widget.parent.users[this.widget.parent.currentUser].name,
-              this
-                  .widget
-                  .parent
-                  .users[this.widget.parent.currentUser]
-                  .name[0],
-              this
-                  .widget
-                  .parent
-                  .users[this.widget.parent.currentUser]
-                  .journal));
+        medAsAList
+            .clear(); // clears the list containing the medicine so it can be reused in the future
 
-      medAsAList
-          .clear(); // clears the list containing the medicine so it can be reused in the future
-
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
-      // clears stack and returns to the Home screen
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+        // clears stack and returns to the Home screen
+      });
     });
-  });
   }
 
   @override

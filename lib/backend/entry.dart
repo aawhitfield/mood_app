@@ -46,7 +46,7 @@ class Entry
     EntryType entryType;
 
     switch(typeString){
-      case 'Mood' : entryType = EntryType.meal;
+      case 'Mood' : entryType = EntryType.mood;
                     break;
       case 'Meal' : entryType = EntryType.meal;
                     break;

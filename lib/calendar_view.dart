@@ -3,6 +3,8 @@ import 'package:mood_app/backend/entry.dart';
 import 'package:mood_app/backend/format_date_time.dart';
 import 'package:mood_app/meds.dart';
 import 'package:mood_app/main.dart';
+import 'package:mood_app/meals.dart';
+import 'package:mood_app/mood.dart';
 
 // TODO: Show only the Calendar for a given month with a view to select previous/next month
 class CalendarView extends StatefulWidget {
@@ -29,13 +31,13 @@ class CalendarViewState extends State<CalendarView> {
   }
 
   Widget _buildCalendarList() {
-    if(widget.entries.length > 0) {
+    if (widget.entries.length > 0) {
       return new ListView.builder(
           reverse: false,
           shrinkWrap: true,
           itemBuilder: (BuildContext context, int i) {
             if (i.isOdd) // puts a divider between each entry
-                {
+            {
               return new Divider();
             }
             final int index = i ~/ 2;
@@ -43,12 +45,12 @@ class CalendarViewState extends State<CalendarView> {
               return _buildRow(widget.entries[index], index);
             }
           });
-    }
-    else return new Container(
-      child: Center(
-        child: Text(''),
-      ),
-    );
+    } else
+      return new Container(
+        child: Center(
+          child: Text(''),
+        ),
+      );
   }
 
   Widget _buildRow(Entry entry, int index) // builds the row in the ListView
@@ -66,62 +68,84 @@ class CalendarViewState extends State<CalendarView> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => MedsWidget(widget.parent, entry, index)),);
-        },
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
+        switch (entry.entryType) {
+          case EntryType.mood:
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      MoodContainer(widget.parent)),
+            );
+            break;
+          case EntryType.meal:
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      MealsWidget(widget.parent)),
+            );
+            break;
 
-
-            Container(
-              margin: EdgeInsets.only(top: 8.0, left: 8.0),
-              width: 70.0,
+          case EntryType.med:
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      MedsWidget(widget.parent, entry, index)),
+            );
+            break;
+        }
+      },
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(top: 8.0, left: 8.0),
+            width: 70.0,
+            child: Column(
+              children: <Widget>[
+                Image(
+                  // if an entry has more than one category (emotion) then the first one selected will be the default image
+                  // displays generic medicine icon for meds, more specific for mood and meals
+                  image: entry.entryType == EntryType.med
+                      ? AssetImage('graphics/medicine.png')
+                      : AssetImage(
+                          'graphics/${entry.dataList[0]}.png'.toLowerCase()),
+                  height: 32.0,
+                ),
+                Text(
+                  formattedEmotionString,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Container(
+              margin: EdgeInsets.all(8.0),
               child: Column(
                 children: <Widget>[
-                  Image(
-                    // if an entry has more than one category (emotion) then the first one selected will be the default image
-                    // displays generic medicine icon for meds, more specific for mood and meals
-                    image: entry.entryType == EntryType.med
-                        ? AssetImage('graphics/medicine.png')
-                        : AssetImage(
-                        'graphics/${entry.dataList[0]}.png'.toLowerCase()),
-                    height: 32.0,
+                  Text(
+                    entry.eventNotes,
+                    style: TextStyle(
+                      fontSize: 14.0,
+                    ),
                   ),
                   Text(
-                    formattedEmotionString,
-                    textAlign: TextAlign.center,
+                    entry.typeAsString(entry.entryType) +
+                        ': ' +
+                        formatAbbreviatedDayWeekDateTime(entry.eventTime),
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                    ),
                   ),
                 ],
               ),
             ),
-            Expanded(
-              child: Container(
-                margin: EdgeInsets.all(8.0),
-                child: Column(
-                  children: <Widget>[
-                    Text(entry.eventNotes,
-                      style: TextStyle(
-                        fontSize: 14.0,
-                      ),
-                    ),
-                    Text(entry.typeAsString(entry.entryType) +
-                        ': ' +
-                        formatAbbreviatedDayWeekDateTime(entry.eventTime),
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        );
-      }
+          ),
+        ],
+      ),
+    );
   }
-
+}

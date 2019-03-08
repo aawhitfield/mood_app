@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
 import 'package:mood_app/backend/emotions.dart';
-
+// TODO: be able to edit mood after added
 class MoodContainer
     extends StatefulWidget // creates a custom stateful widget for the Mood tab
 {

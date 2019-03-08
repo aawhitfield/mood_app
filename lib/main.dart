@@ -321,7 +321,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     DateTime testTime = new DateTime.now();
     List<String> testString = [''];
 
-Entry test = new Entry(testTime, '', testString, EntryType.meal);
+Entry test = new Entry(testTime, '', testString, EntryType.mood);
 
     return Scaffold(
       appBar: AppBar(
@@ -373,6 +373,7 @@ Entry test = new Entry(testTime, '', testString, EntryType.meal);
       newEntry = Entry(now, notesText, tempList, EntryType.mood);
       users[currentUser].journal.insert(0,newEntry);
       User user = new User(currentUser, users[currentUser].name, users[currentUser].name[0], users[currentUser].journal);
+      print(user.journal[0].entryType);
       saveUserAccount(userKey, currentUser, user);
       todaysEmotions.clear();
       notesController.clear();
