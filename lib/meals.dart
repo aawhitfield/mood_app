@@ -9,9 +9,16 @@ import 'package:mood_app/backend/user.dart';
 // TODO: Be able to edit meals after added
 class MealsWidget extends StatefulWidget {
   final MyHomePageState parent;
+  final Entry _entry;
+  final int _index;
+
 
   MealsWidget(
-      this.parent); // passes MyHomePageState to access global variables for read/write
+      this.parent,
+      this._entry,
+      this._index
+
+      ); // passes MyHomePageState to access global variables for read/write
 
   @override
   MealsWidgetState createState() {
@@ -260,7 +267,7 @@ class MealsWidgetState extends State<MealsWidget> {
               Icons.access_time,
               color: Colors.white,
             ),
-            title: Text(dateString),
+            title: Text(dateString), // TODO: Have date switch to journal date if tapped from calendar view
             onTap: (){_selectDate(context);},
             trailing: GestureDetector(
               onTap: (){
@@ -286,5 +293,42 @@ class MealsWidgetState extends State<MealsWidget> {
         ],
       ),
     );
+
+
+  }
+
+  @override
+  void initState(){
+      super.initState();
+
+      if(widget._entry != null)
+        {
+          switch(widget._entry.dataList.toString()){
+            case '[Breakfast]': mealList[0].state = true;
+                                mealList[1].state = false;
+                                mealList[2].state = false;
+                                mealList[3].state = false;
+            break;
+            case '[Lunch]': mealList[0].state = false;
+                            mealList[1].state = true;
+                            mealList[2].state = false;
+                            mealList[3].state = false;
+            break;
+            case '[Dinner]': mealList[0].state = false;
+                            mealList[1].state = false;
+                            mealList[2].state = true;
+                            mealList[3].state = false;
+            break;
+            case '[Snack]': mealList[0].state = false;
+                            mealList[1].state = false;
+                            mealList[2].state = false;
+                            mealList[3].state = true;
+            break;
+
+            default: print('fail');
+                      break;
+
+          }
+        }
   }
 }

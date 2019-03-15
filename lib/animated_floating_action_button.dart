@@ -120,7 +120,7 @@ class AnimatedFloatingActionButtonState
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => MealsWidget(widget.parent),
+                                          builder: (context) => MealsWidget(widget.parent, null, 0),
                                       ),
                                   );
                                 },

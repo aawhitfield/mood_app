@@ -82,7 +82,7 @@ class CalendarViewState extends State<CalendarView> {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      MealsWidget(widget.parent)),
+                      MealsWidget(widget.parent, entry, index)),
             );
             break;
 
