@@ -112,12 +112,10 @@ class MedsWidgetState extends State<MedsWidget> {
         actions: <Widget>[
           IconButton(
             icon: widget._entry != null
-                ? Text(
-                    'Update',
-                    style: TextStyle(
-                      fontSize: 10.0,
-                    ),
-                  )
+                ? Icon(
+              Icons.save,
+              color: Colors.white,
+            )
                 : Icon(
                     Icons.add,
                     color: Colors.white,
