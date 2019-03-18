@@ -1,25 +1,34 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
 import 'package:mood_app/backend/format_date_time.dart';
+import 'package:mood_app/backend/entry.dart';
 
-class MoodNotesDialog extends StatefulWidget                                    // creates a custom stateful widget for the Mood notes popup dialog
+class MoodNotesDialog
+    extends StatefulWidget // creates a custom stateful widget for the Mood notes popup dialog
 {
-  final MyHomePageState parent;                                                 // creates a variable for the parent Widgets so I can pass/receive info from parent variables
+  final MyHomePageState
+      parent; // creates a variable for the parent Widgets so I can pass/receive info from parent variables
+  final Entry _entry;
+  final int _index;
 
-  MoodNotesDialog(this.parent);                                                 // constructor requiring the parent's context, and initializer
+  MoodNotesDialog(this.parent,
+      this._entry,
+      this._index,
+      ); // constructor requiring the parent's context, and initializer
 
   @override
-  State<StatefulWidget> createState() {                                         // nevessary override function
+  State<StatefulWidget> createState() {
+    // nevessary override function
 
     return new MoodNotesDialogState();
   }
 
+  void onLoad(BuildContext context) {
+    // this is the function I want to run when the widget is loaded
 
-  void onLoad(BuildContext context) {                                           // this is the function I want to run when the widget is loaded
-
-
-
-    Widget _buildTile(String emotion) // builds the row in the ListView         // this private function builds  the row of emojis in the popup. Called by _buildEmojiList
+    Widget _buildTile(
+        String
+            emotion) // builds the row in the ListView         // this private function builds  the row of emojis in the popup. Called by _buildEmojiList
     {
       return new Container(
         width: 60,
@@ -49,49 +58,47 @@ class MoodNotesDialog extends StatefulWidget                                    
       );
     }
 
-
-
-
-
-
-
-
-    Widget _buildEmojiList()                                                    // builds the ListView of emojis. Called by askUser
+    Widget _buildEmojiList() // builds the ListView of emojis. Called by askUser
     {
       return new ListView.builder(
           scrollDirection: Axis.horizontal,
           itemBuilder: (BuildContext _context, int index) {
-
             if (index < parent.todaysEmotions.length) {
               return _buildTile(parent.todaysEmotions[index]);
             }
           });
     }
 
-
-
-
-
-    Future<Null> askUser() async {                                              // this is the function that builds the popup for notes to mood
+    Future<Null> askUser() async {
+      // this is the function that builds the popup for notes to mood
       parent.now = new DateTime.now();
       String formattedDateTime = formatDateTime(parent.now);
       switch (await showDialog(
           context: context,
           child: new SimpleDialog(
-            title: new Text(
-              'New Journal Entry',
-              style: TextStyle(
-                fontFamily: "Roboto",
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            title: (_entry == null)
+                ? Text(
+                    'New Journal Entry',
+                    style: TextStyle(
+                      fontFamily: "Roboto",
+                      fontWeight: FontWeight.w600,
+                    ),
+                  )
+                : Text(
+                    'Edit Journal Entry',
+                    style: TextStyle(
+                      fontFamily: "Roboto",
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
             children: <Widget>[
               Row(
                 // time date stamp
                 children: <Widget>[
                   Center(
                     child: Container(
-                      child: Text(formattedDateTime,
+                      child: Text(
+                        formattedDateTime,
                         style: TextStyle(
                           fontSize: 15,
                         ),
@@ -132,7 +139,7 @@ class MoodNotesDialog extends StatefulWidget                                    
                       decoration: InputDecoration(
                           labelText: 'Notes',
                           labelStyle:
-                          TextStyle(color: Theme.of(context).hintColor)),
+                              TextStyle(color: Theme.of(context).hintColor)),
                       onSubmitted: (String text) => parent.onAddPressed,
                       textInputAction: TextInputAction.done,
                     ),
@@ -156,6 +163,7 @@ class MoodNotesDialog extends StatefulWidget                                    
                   new FlatButton(
                     onPressed: (() {
                       Navigator.pop(context, Answer.CANCEL);
+                      parent.notesController.clear();
                     }),
                     child: Text('CANCEL'),
                     textColor: Theme.of(context).accentColor,
@@ -163,7 +171,7 @@ class MoodNotesDialog extends StatefulWidget                                    
                   new FlatButton(
                     onPressed: (() {
                       Navigator.pop(context, Answer.ADD);
-                      parent.onAddPressed(parent.notesController.text);
+                      parent.onAddPressed(parent.notesController.text, _entry, _index);
                       parent.notesController.clear();
 
                       // let user know action was successful
@@ -174,7 +182,7 @@ class MoodNotesDialog extends StatefulWidget                                    
                       );
                       parent.scaffoldKey.currentState.showSnackBar(snackbar);
                     }),
-                    child: Text('ADD'),
+                    child: _entry == null ? Text('ADD') : Text('SAVE'),
                     textColor: Theme.of(context).accentColor,
                   ),
                 ],
@@ -182,58 +190,34 @@ class MoodNotesDialog extends StatefulWidget                                    
             ],
           ))) {
         case Answer.ADD:
-
           break;
         case Answer.CANCEL:
-
           break;
       }
     }
 
+    if (_entry != null) {
+      parent.notesController.text = _entry.eventNotes;
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-  askUser();                                                                    // this is the command that actually calls the askUser function and starts everything in motion
-
+    askUser(); // this is the command that actually calls the askUser function and starts everything in motion
   } // end onLoad
-
-
 
 }
 
-class MoodNotesDialogState extends State<MoodNotesDialog>
-{
+class MoodNotesDialogState extends State<MoodNotesDialog> {
   @override
-  Widget build(BuildContext context) {                                          // useless but I don't know what else to put as a child. I needed a widget to pass the build context to?
+  Widget build(BuildContext context) {
+    // useless but I don't know what else to put as a child. I needed a widget to pass the build context to?
     return new Container(
-        child: Text('Hello World'),
+      child: Text('Hello World'),
     );
   }
 
-  @override                                                                     // also useless but I didn't know what other function I could run when Widget built
+  @override // also useless but I didn't know what other function I could run when Widget built
   void initState() {
     super.initState();
-    print('initState');
+
     widget.onLoad(context);
   }
-
-
-
-
-
-
-
-
-
-
 }
