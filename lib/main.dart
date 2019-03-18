@@ -310,10 +310,10 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
   // *****************                                                          // end of method for animated floating action button
 
-  void onButtonPressed() {
+  void onButtonPressed(Entry _entry, int _index) {
     // action that floating button takes
 
-    todaysEmotions.length > 0 ? MoodNotesDialog(this).onLoad(context) : null;
+    todaysEmotions.length > 0 ? MoodNotesDialog(this, _entry, _index).onLoad(context) : null;
   }
 
   @override
@@ -364,16 +364,20 @@ Entry test = new Entry(testTime, '', testString, EntryType.mood);
 
 
   void onAddPressed(
-      String text) // runs when user presses ADD on the notes popup
+      String text, Entry _entry, int _index) // runs when user presses ADD on the notes popup
   {
     //
     setState(() {
       notesText = text;
       List<String> tempList = todaysEmotions.toList();
       newEntry = Entry(now, notesText, tempList, EntryType.mood);
-      users[currentUser].journal.insert(0,newEntry);
+      if (_entry == null) {
+        users[currentUser].journal.insert(0,newEntry);
+      }
+      else{
+        users[currentUser].journal[_index] = newEntry;
+      }
       User user = new User(currentUser, users[currentUser].name, users[currentUser].name[0], users[currentUser].journal);
-      print(user.journal[0].entryType);
       saveUserAccount(userKey, currentUser, user);
       todaysEmotions.clear();
       notesController.clear();

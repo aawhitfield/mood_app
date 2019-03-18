@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
 import 'package:mood_app/backend/emotions.dart';
-// TODO: be able to edit mood after added
+import 'package:mood_app/backend/entry.dart';
+
 class MoodContainer
     extends StatefulWidget // creates a custom stateful widget for the Mood tab
 {
   final MyHomePageState
       parent; // creates a variable for the parent Widgets so I can pass/receive info from parent variables
+  final Entry _entry;
+  final int _index;
 
-  MoodContainer(
-      this.parent); // constructor requiring the parent's context, and initializer
+  MoodContainer(this.parent,
+      this._entry,
+      this._index,
+      ); // constructor requiring the parent's context, and initializer
 
   @override
   State<StatefulWidget> createState() {
@@ -21,35 +26,49 @@ class MoodContainerState
     extends State<MoodContainer> // controls all the UI state of the Mood Widget
 {
   // ***
+
   @override
   Widget build(BuildContext context) {
     // builds a container for the mood list view
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Mood Entry'),
-        leading: GestureDetector(                                               // cancel X button to close if user wants to abort adding an entry
+        title: (widget._entry != null)
+            ? Text(
+                'Edit Mood', // app bar title that this medicine entry mode
+              )
+            : Text('Add Mood'),
+        leading: GestureDetector(
+          // cancel X button to close if user wants to abort adding an entry
           child: Icon(Icons.clear),
-          onTap: (){
+          onTap: () {
             Navigator.pop(context);
+            this.widget.parent.todaysEmotions.clear();
           },
         ),
         actions: <Widget>[
           IconButton(
-              icon: Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-              onPressed: (){
-                widget.parent.onButtonPressed();
+              icon: (widget._entry != null)
+                  ? Icon(
+                      Icons.edit,
+                      color: Colors.white,
+                    )
+                  : Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    ),
+              onPressed: () {
+                if(widget._entry == null) {
+                  widget.parent.onButtonPressed(null, null);
+                }
+                else{
+                  widget.parent.onButtonPressed(widget._entry, widget._index);
+                }
               }),
         ],
       ),
       body: new Container(
         child: _buildEmotionList(),
       ),
-
-
-
     );
   }
 
@@ -90,7 +109,6 @@ class MoodContainerState
                     emotion) // if the emotion is already selected and it's selected again, then it's removed from the list
                 : this.widget.parent.todaysEmotions.add(
                     emotion); // if the emotion hasn't been selected previously, then it is added to the list
-
           });
         });
       },
@@ -113,5 +131,18 @@ class MoodContainerState
             }),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget._entry != null) {
+      print(this.widget._entry.dataList);
+      widget._entry.dataList.forEach((emotion) {
+        this.widget.parent.todaysEmotions.add(emotion.trim());
+        print(emotion);
+      });
+    }
   }
 } // end class MoodContainerState

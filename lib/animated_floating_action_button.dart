@@ -179,7 +179,7 @@ class AnimatedFloatingActionButtonState
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          MoodContainer(widget.parent),
+                                          MoodContainer(widget.parent, null, null),
                                     ),
                                   );
                                 },

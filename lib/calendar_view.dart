@@ -74,7 +74,7 @@ class CalendarViewState extends State<CalendarView> {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      MoodContainer(widget.parent)),
+                      MoodContainer(widget.parent, entry, index)),
             );
             break;
           case EntryType.meal:

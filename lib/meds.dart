@@ -6,8 +6,6 @@ import 'package:mood_app/backend/save.dart';
 import 'package:mood_app/backend/retrieve.dart';
 import 'package:mood_app/backend/user.dart';
 
-// TODO: change + button to update
-// TODO: apply med updates to meals and mood
 
 class MedsWidget extends StatefulWidget {
   final MyHomePageState parent;
