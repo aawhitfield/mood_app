@@ -13,8 +13,9 @@ import 'animated_floating_action_button.dart';
 import 'menu/menu.dart';
 import 'menu/settings.dart';
 import 'menu/credits.dart';
-import 'package:mood_app/backend/emotions.dart';                                                         // contains the list of all emotions the user can track  plus the ones the user selected to track
+import 'package:mood_app/backend/emotions.dart'; // contains the list of all emotions the user can track  plus the ones the user selected to track
 import 'package:mood_app/backend/user.dart';
+import 'package:splashscreen/splashscreen.dart';
 
 void main() => runApp(MyApp());
 
@@ -45,14 +46,23 @@ class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'EmojiTrack+',
-      theme: blueTheme,
-      routes: <String, WidgetBuilder>{
-        '/home': (BuildContext context) => new MyHomePage(title: 'EmojiTrack+'),
-      },
-      home: MyHomePage(title: 'EmojiTrack+'),
-      debugShowCheckedModeBanner: false,
-    );
+        title: 'EmojiTrack+',
+        theme: blueTheme,
+        routes: <String, WidgetBuilder>{
+          '/home': (BuildContext context) =>
+              new MyHomePage(title: 'EmojiTrack+'),
+        },
+        home: new SplashScreen(
+          seconds: 3,
+          navigateAfterSeconds: MyHomePage(title: 'EmojiTrack+'),
+          backgroundColor: Colors.black,
+          image: Image.asset('graphics/logo.png',
+            fit: BoxFit.fitWidth,
+          ),
+          photoSize: 180.0,
+        ),
+        debugShowCheckedModeBanner: false,
+      );
   }
 }
 
@@ -85,7 +95,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Entry newEntry; // new entry to the journal to be displayed in Calendar mode
   //List<Entry> journal = <Entry>[]; // the list of all journal entries
   List<User> users = <User>[new User(0, 'Tap to Enter Name', ' ', <Entry>[])];
-  int currentUser = 0;            // the position the currentUser is in the User array
+  int currentUser = 0; // the position the currentUser is in the User array
   String currentUserName = 'Default Name';
 
   final scaffoldKey = GlobalKey<
@@ -110,41 +120,38 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Animation<double> animation3;
   // ***************                                                            // end of variables for animated floating action button
 
-
-
-
   List<String> todaysEmotions =
-      <String>[];                                                               // the list of all emotions the user selects in a single entry
+      <String>[]; // the list of all emotions the user selects in a single entry
 
-  void choiceAction(String choice){
-    switch(choice){
-      case 'Settings'
-          : Navigator.push(
-                context,
-                new MaterialPageRoute(
-                    builder: (BuildContext context) => SettingsPage(),
-                ),
-            );
-            break;
-      case 'Credits'
-          : Navigator.push(
-                context,
-                new MaterialPageRoute(
-                    builder: (BuildContext context) => CreditsPage(),
-                ),
-            );
-            break;
-      case 'Meet the Developer'
-        : Navigator.push(
-            context,
-            new MaterialPageRoute(
-              builder: (BuildContext context) => DeveloperPage(),
-            ),
-          );
-          break;
-      default
-          : print('Unknown');
-          break;
+  void choiceAction(String choice) {
+    switch (choice) {
+      case 'Settings':
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+            builder: (BuildContext context) => SettingsPage(),
+          ),
+        );
+        break;
+      case 'Credits':
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+            builder: (BuildContext context) => CreditsPage(),
+          ),
+        );
+        break;
+      case 'Meet the Developer':
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+            builder: (BuildContext context) => DeveloperPage(),
+          ),
+        );
+        break;
+      default:
+        print('Unknown');
+        break;
     }
   }
 
@@ -156,117 +163,97 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   @override // prevents users from adding a note with no emotions
   void initState() {
-
-
     //*************************************************************
     // Restores all user accounts from Shared Preferences
-    restoreIntFromSharedPreferences(numberOfUsersKey).then((numUsers){
-      if(numUsers == null) {
+    restoreIntFromSharedPreferences(numberOfUsersKey).then((numUsers) {
+      if (numUsers == null) {
         numberOfUsers = 1;
-
-      }
-      else {
+      } else {
         numberOfUsers = numUsers;
       }
 
-        for (var i = 0; i < numberOfUsers; i++){
-          int id = i;
-          String name = 'Tap to enter name';
-          String avatar = name[0];
-          List<Entry> journal = new List();
+      for (var i = 0; i < numberOfUsers; i++) {
+        int id = i;
+        String name = 'Tap to enter name';
+        String avatar = name[0];
+        List<Entry> journal = new List();
 
-          restoreIntFromSharedPreferences(userKey + 'id $i').then((userID){
-            if(userID != null){
-              id = userID;
-              restoreStringFromSharedPreferences(userKey + 'name $i').then((userName){
+        restoreIntFromSharedPreferences(userKey + 'id $i').then((userID) {
+          if (userID != null) {
+            id = userID;
+            restoreStringFromSharedPreferences(userKey + 'name $i')
+                .then((userName) {
+              if (userName != null) {
+                name = userName;
+                String avatar = name[0];
+                restoreListOfObjectsFromSharedPreferences(
+                        userKey + 'journal $i')
+                    .then((stringListOfObjects) {
+                  // restores List from SharedPreferences string key
 
-                if(userName != null)
-                  {
-                    name = userName;
-                    String avatar = name[0];
-                    restoreListOfObjectsFromSharedPreferences(userKey + 'journal $i')
-                        .then((stringListOfObjects) {
-                      // restores List from SharedPreferences string key
+                  stringListOfObjects.forEach((stringObject) {
+                    // formats List further so it parses back into Entry object correctly.
+                    if (!stringObject.toString().endsWith('}')) {
+                      stringObject += '}';
+                    }
 
-                      stringListOfObjects.forEach((stringObject) {
-                        // formats List further so it parses back into Entry object correctly.
-                        if (!stringObject.toString().endsWith('}')) {
-                          stringObject += '}';
-                        }
+                    Map<String, dynamic> map = json.decode(
+                        stringObject); // uses JSON library to decode the string containing the List<Object> -> Map
 
-                        Map<String, dynamic> map = json.decode(
-                            stringObject); // uses JSON library to decode the string containing the List<Object> -> Map
+                    Entry entry = new Entry.fromJson(
+                        map); // creates Entry objects with contents of Map
 
-                        Entry entry = new Entry.fromJson(
-                            map); // creates Entry objects with contents of Map
-
-                        setState((){
-                          journal.add(entry);
-                        }); // adds the Entry to journal List to complete the restore.
-                      });
-
-                    });
-                  }
-                User user = new User(id, name, avatar, journal);
-                if(id == 0)
-                {
-                  users[0] = user;
-                }
-                else{
-                  users.add(user);
-                }
-
-              });
-            }
-          });
-        }
+                    setState(() {
+                      journal.add(entry);
+                    }); // adds the Entry to journal List to complete the restore.
+                  });
+                });
+              }
+              User user = new User(id, name, avatar, journal);
+              if (id == 0) {
+                users[0] = user;
+              } else {
+                users.add(user);
+              }
+            });
+          }
+        });
+      }
     });
 
-    restoreIntFromSharedPreferences(currentUserKey).then((value){
-      setState((){
-        if (value == null)
-          {
-            currentUser = 0;
-          }
-          else
-          {
-            currentUser = value;
-          }
-
+    restoreIntFromSharedPreferences(currentUserKey).then((value) {
+      setState(() {
+        if (value == null) {
+          currentUser = 0;
+        } else {
+          currentUser = value;
+        }
       });
     });
-
-
-
-
 
     //****************************************************************************
     // End restore user accounts from Shared Preferences
 
     restoreListStringFromSharedPreferences('settingsEmotionsKey')
-      .then((stringList) {
-
-        setState((){
-          if (stringList != null) {
-            emotions.clear();
-            stringList.forEach((element){
-              emotions.add(element);
-            });
-          }
-
-        });
-
+        .then((stringList) {
+      setState(() {
+        if (stringList != null) {
+          emotions.clear();
+          stringList.forEach((element) {
+            emotions.add(element);
+          });
+        }
+      });
     });
-    
-    
-    restoreStringFromSharedPreferences(userKey + 'name $currentUser').then((name){
-      if(name != null){
-        setState((){
+
+    restoreStringFromSharedPreferences(userKey + 'name $currentUser')
+        .then((name) {
+      if (name != null) {
+        setState(() {
           currentUserName = name;
         });
       }
     });
-
 
     // **************                                                           // set of commands to handle animations of the animated floating action button
     controller = new AnimationController(
@@ -310,10 +297,12 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
   // *****************                                                          // end of method for animated floating action button
 
-  void onButtonPressed() {
+  void onButtonPressed(Entry _entry, int _index) {
     // action that floating button takes
 
-    todaysEmotions.length > 0 ? MoodNotesDialog(this).onLoad(context) : null;
+    todaysEmotions.length > 0
+        ? MoodNotesDialog(this, _entry, _index).onLoad(context)
+        : null;
   }
 
   @override
@@ -321,7 +310,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     DateTime testTime = new DateTime.now();
     List<String> testString = [''];
 
-Entry test = new Entry(testTime, '', testString, EntryType.meal);
+    Entry test = new Entry(testTime, '', testString, EntryType.mood);
 
     return Scaffold(
       appBar: AppBar(
@@ -332,8 +321,8 @@ Entry test = new Entry(testTime, '', testString, EntryType.meal);
         actions: <Widget>[
           PopupMenuButton<String>(
             onSelected: choiceAction,
-            itemBuilder: (BuildContext context){
-              return Menu.choices.map((String choice){
+            itemBuilder: (BuildContext context) {
+              return Menu.choices.map((String choice) {
                 return PopupMenuItem<String>(
                   value: choice,
                   child: Text(choice),
@@ -344,33 +333,30 @@ Entry test = new Entry(testTime, '', testString, EntryType.meal);
         ],
       ),
       body: CalendarView(
-          entries: users.isEmpty
-              ? null
-              : users[currentUser].journal),
+        entries: users.isEmpty ? null : users[currentUser].journal,
+        parent: this,
+      ),
       key: scaffoldKey,
-
-
       drawer: UserDrawer(this),
-
       floatingActionButton: AnimatedFloatingActionButton(this),
     );
   }
 
-
-
-
-
-
-  void onAddPressed(
-      String text) // runs when user presses ADD on the notes popup
+  void onAddPressed(String text, Entry _entry,
+      int _index) // runs when user presses ADD on the notes popup
   {
     //
     setState(() {
       notesText = text;
       List<String> tempList = todaysEmotions.toList();
       newEntry = Entry(now, notesText, tempList, EntryType.mood);
-      users[currentUser].journal.insert(0,newEntry);
-      User user = new User(currentUser, users[currentUser].name, users[currentUser].name[0], users[currentUser].journal);
+      if (_entry == null) {
+        users[currentUser].journal.insert(0, newEntry);
+      } else {
+        users[currentUser].journal[_index] = newEntry;
+      }
+      User user = new User(currentUser, users[currentUser].name,
+          users[currentUser].name[0], users[currentUser].journal);
       saveUserAccount(userKey, currentUser, user);
       todaysEmotions.clear();
       notesController.clear();

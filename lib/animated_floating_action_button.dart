@@ -63,7 +63,7 @@ class AnimatedFloatingActionButtonState
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => MedsWidget(widget.parent),));
+                                          builder: (context) => MedsWidget(widget.parent, null, 0),));
                                 },
                                 child: new Center(
                                   child: new Icon(
@@ -120,7 +120,7 @@ class AnimatedFloatingActionButtonState
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => MealsWidget(widget.parent),
+                                          builder: (context) => MealsWidget(widget.parent, null, 0),
                                       ),
                                   );
                                 },
@@ -179,7 +179,7 @@ class AnimatedFloatingActionButtonState
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          MoodContainer(widget.parent),
+                                          MoodContainer(widget.parent, null, null),
                                     ),
                                   );
                                 },
